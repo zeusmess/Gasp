@@ -416,7 +416,7 @@ async function init() {
   gsap.set("#badgeRing, #badgeRing2", { drawSVG: 0 });
   gsap.set("#logo", { scale: .4, rotation: -25, opacity: 0, transformOrigin: "50% 50%" });
   gsap.set("#pin", { scale: 0, transformOrigin: "50% 50%" });
-  gsap.set("#badgeHalo, #byline", { opacity: 0 });
+  gsap.set("#badgeHalo, #byline, #endText .e3", { opacity: 0 });
   gsap.set("#leak", { x: 0, y: 0 });
 
   const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
@@ -518,9 +518,9 @@ async function init() {
     .to("#check", { autoAlpha: 1, y: 0, scale: 1, duration: .8, ease: "expo.out" }, 28.5)
     .to("#check .row", { opacity: 1, x: 0, duration: .5, stagger: .45 }, 28.8)
     .to("#check .tick", { drawSVG: "100%", duration: .35, stagger: .45, ease: "power2.out" }, 29.0)
-    .to("#check", { autoAlpha: 0, y: -40, duration: .5, ease: "power2.in" }, 31.0);
+    .to("#check", { autoAlpha: 0, y: -40, duration: .45, ease: "power2.in" }, 30.4);
   capIn("#c4", 27.3);
-  capOut("#c4", 30.9);
+  capOut("#c4", 30.6);
   cupOut(31.0, .6);
   nameW.reset(31.62);
 
