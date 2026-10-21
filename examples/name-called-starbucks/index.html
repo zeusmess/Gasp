@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>الاسم اللي بيتنادى — Pink October</title>
+<style>
+  @font-face { font-family: "Cairo"; src: url("fonts/Cairo.ttf") format("truetype"); font-weight: 200 1000; }
+  @font-face { font-family: "Ruqaa"; src: url("fonts/ArefRuqaa-Bold.ttf") format("truetype"); font-weight: 700; }
+
+  :root {
+    --pink: #ff6fa3;
+    --pink-soft: #ffc2d8;
+    --cream: #f6e7d6;
+    --green: #1e3932;
+    --ink: #16110e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: #000; overflow: hidden; }
+  body { font-family: "Cairo", system-ui, sans-serif; }
+
+  #stage {
+    position: absolute; left: 50%; top: 50%;
+    width: 1080px; height: 1920px;
+    transform-origin: 0 0; overflow: hidden; background: #0b0604;
+  }
+  #world { position: absolute; inset: 0; filter: saturate(1) brightness(1); }
+  #world > * { position: absolute; inset: 0; }
+  svg { width: 100%; height: 100%; }
+
+  /* bokeh café lights */
+  #bokeh .b { position: absolute; border-radius: 50%; mix-blend-mode: screen; }
+  #leak {
+    background: radial-gradient(closest-side, rgba(255,170,90,.35), rgba(255,120,60,0) 70%);
+    width: 1400px; height: 1400px; left: -400px; top: -300px; inset: auto; mix-blend-mode: screen;
+  }
+
+  /* captions */
+  .cap { position: absolute; left: 70px; width: 940px; text-align: center; color: #fff; line-height: 1.3; direction: rtl; }
+  .cap .line { display: block; }
+  .cap .w { display: inline-block; will-change: transform, opacity, filter; }
+  .bottom { top: 1530px; }
+  .h1 { font-size: 78px; font-weight: 800; }
+  .h2 { font-size: 54px; font-weight: 600; color: var(--pink-soft); }
+  .note { font-size: 24px; font-weight: 400; color: rgba(255,255,255,.45); margin-top: 14px; }
+  .pink { color: var(--pink); }
+
+  /* day / time chip */
+  #chip {
+    position: absolute; top: 96px; left: 0; right: 0; margin: 0 auto; width: fit-content;
+    display: flex; align-items: center; gap: 18px; white-space: nowrap;
+    padding: 14px 34px; border-radius: 999px;
+    background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16);
+    color: #fff; font-size: 36px; font-weight: 700; backdrop-filter: blur(12px);
+  }
+  #chip .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--pink); }
+  #chip #time { color: rgba(255,255,255,.65); font-weight: 600; direction: rtl; }
+
+  /* barista call */
+  .call {
+    position: absolute; top: 300px; left: 120px; width: 420px; text-align: center;
+    font-size: 110px; font-weight: 900; color: #fff; letter-spacing: -1px;
+    text-shadow: 0 10px 40px rgba(0,0,0,.6);
+  }
+  .call .waves { position: absolute; top: 30px; left: -40px; width: 60px; height: 110px; }
+
+  /* phone notification */
+  #notif {
+    position: absolute; top: 230px; left: 60px; width: 960px;
+    display: flex; gap: 26px; align-items: center; padding: 30px 34px;
+    border-radius: 44px; background: rgba(38,32,30,.72); border: 1px solid rgba(255,255,255,.14);
+    backdrop-filter: blur(30px) saturate(1.4); box-shadow: 0 30px 80px rgba(0,0,0,.45);
+    color: #fff; direction: rtl;
+  }
+  #notif .icon {
+    flex: none; width: 104px; height: 104px; border-radius: 26px;
+    background: linear-gradient(145deg, #ff8ab5, #e9457f); display: grid; place-items: center;
+  }
+  #notif .t { font-size: 34px; font-weight: 800; display: flex; justify-content: space-between; width: 100%; }
+  #notif .t small { font-size: 26px; font-weight: 500; color: rgba(255,255,255,.55); }
+  #notif .b { font-size: 36px; font-weight: 500; color: rgba(255,255,255,.88); margin-top: 4px; }
+  #notif .txt { flex: 1; }
+
+  /* checklist card */
+  #check {
+    position: absolute; top: 470px; left: 150px; width: 780px; padding: 40px 46px;
+    border-radius: 40px; background: #fffaf5; color: var(--ink); direction: rtl;
+    box-shadow: 0 40px 90px rgba(0,0,0,.5);
+  }
+  #check h3 { font-size: 30px; font-weight: 700; color: #9b8d82; letter-spacing: 1px; margin-bottom: 18px; }
+  #check .row { display: flex; align-items: center; gap: 24px; font-size: 42px; font-weight: 700; padding: 16px 0; }
+  #check .row + .row { border-top: 2px solid #efe6dd; }
+  #check svg { width: 58px; height: 58px; flex: none; }
+
+  /* rewind */
+  #rew { pointer-events: none; }
+  #scan { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 2px, transparent 2px 6px); }
+  #track { position: absolute; left: 0; width: 100%; height: 90px; top: 0;
+    background: linear-gradient(180deg, transparent, rgba(255,255,255,.18) 40%, rgba(255,255,255,.05) 60%, transparent); }
+  #rewLabel { position: absolute; top: 210px; left: 80px; font: 800 64px "Cairo"; color: #fff; direction: ltr; letter-spacing: 4px;
+    text-shadow: 3px 0 rgba(255,0,80,.7), -3px 0 rgba(0,200,255,.7); }
+  #flash { position: absolute; inset: 0; background: #fff; }
+
+  /* end card */
+  #endText { position: absolute; top: 1180px; left: 60px; width: 960px; text-align: center; color: #fff; }
+  #endText .e1 { font-size: 80px; font-weight: 900; line-height: 1.25; }
+  #endText .e2 { font-size: 66px; font-weight: 800; color: var(--pink); margin-top: 6px; }
+  #endText .e3 { font-size: 32px; font-weight: 600; color: rgba(255,255,255,.7); margin-top: 26px; }
+  #byline { position: absolute; top: 1780px; left: 0; width: 100%; text-align: center; direction: ltr;
+    font-size: 30px; font-weight: 600; letter-spacing: 8px; color: rgba(255,255,255,.72); }
+  #byline::before, #byline::after { content: ""; display: inline-block; width: 60px; height: 1px; background: rgba(255,255,255,.35); vertical-align: middle; margin: 0 22px; }
+
+  #grain { position: absolute; inset: 0; pointer-events: none; opacity: .09; mix-blend-mode: overlay; }
+  #vignette { position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse 75% 60% at 50% 48%, transparent 45%, rgba(0,0,0,.7) 100%); }
+  #black { position: absolute; inset: 0; background: #000; }
+
+  #ui { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 10; }
+  #ui button { font: 600 14px "Cairo", sans-serif; color: #fff; background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.2); border-radius: 999px; padding: 8px 18px; cursor: pointer; }
+  .record #ui { display: none; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <!-- warm wall -->
+    <div style="background: radial-gradient(ellipse 90% 60% at 50% 30%, #4a2c1c 0%, #26150d 55%, #0c0604 100%)"></div>
+    <div id="bokeh"></div>
+    <div id="leak"></div>
+
+    <svg viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="gBody" x1="0" x2="1">
+          <stop offset="0" stop-color="#bdb2a6"/><stop offset=".18" stop-color="#ece6de"/>
+          <stop offset=".42" stop-color="#ffffff"/><stop offset=".72" stop-color="#ebe4dc"/>
+          <stop offset="1" stop-color="#a99d91"/>
+        </linearGradient>
+        <linearGradient id="gLid" x1="0" x2="1">
+          <stop offset="0" stop-color="#cfc6bd"/><stop offset=".4" stop-color="#ffffff"/>
+          <stop offset=".75" stop-color="#e6ded5"/><stop offset="1" stop-color="#b3a89c"/>
+        </linearGradient>
+        <linearGradient id="gCounter" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#5a3622"/><stop offset=".04" stop-color="#3a2216"/>
+          <stop offset="1" stop-color="#130a06"/>
+        </linearGradient>
+        <radialGradient id="gShadow"><stop offset="0" stop-color="#000" stop-opacity=".65"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+        <radialGradient id="gGlow"><stop offset="0" stop-color="#ff6fa3" stop-opacity=".5"/><stop offset="1" stop-color="#ff6fa3" stop-opacity="0"/></radialGradient>
+        <clipPath id="clipLogo"><circle r="84"/></clipPath>
+        <clipPath id="clipBig"><circle r="226"/></clipPath>
+        <filter id="fSteam" x="-100%" y="-50%" width="300%" height="200%"><feGaussianBlur stdDeviation="9"/></filter>
+        <filter id="fSoft"><feGaussianBlur stdDeviation="2"/></filter>
+        <linearGradient id="gShine" x1="0" x2="1">
+          <stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+        </linearGradient>
+
+        <!-- paper cup, bottom-centre at (0,0) -->
+        <g id="cupArt">
+          <ellipse cx="0" cy="6" rx="260" ry="34" fill="url(#gShadow)"/>
+          <path d="M-224,-742 L224,-742 L170,0 L-170,0 Z" fill="url(#gBody)"/>
+          <path d="M-170,0 L170,0 L172,-22 L-172,-22 Z" fill="#000" opacity=".06"/>
+          <path d="M-224,-742 L-208,-742 L-156,0 L-170,0 Z" fill="#000" opacity=".05"/>
+          <g transform="translate(0 -330)" clip-path="url(#clipLogo)">
+            <circle r="84" fill="#fff"/>
+            <image href="starbucks-logo.png" x="-86" y="-86" width="172" height="173" preserveAspectRatio="xMidYMid slice"/>
+          </g>
+          <rect x="-244" y="-786" width="488" height="48" rx="18" fill="url(#gLid)"/>
+          <path d="M-232,-786 C-226,-842 226,-842 232,-786 Z" fill="url(#gLid)"/>
+          <path d="M-200,-812 C-120,-830 120,-830 200,-812" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="4"/>
+          <rect x="-244" y="-750" width="488" height="6" fill="#000" opacity=".08"/>
+          <ellipse cx="96" cy="-826" rx="34" ry="8" fill="#5b4a40"/>
+        </g>
+      </defs>
+
+      <!-- counter -->
+      <g id="counter">
+        <rect x="0" y="1400" width="1080" height="520" fill="url(#gCounter)"/>
+        <rect x="0" y="1398" width="1080" height="4" fill="#a8774f" opacity=".55"/>
+      </g>
+
+      <!-- 1 in 8 grid -->
+      <g id="grid"></g>
+
+      <!-- hero cup -->
+      <g id="cup">
+        <use href="#cupArt"/>
+        <g id="steam" transform="translate(96 -840)" filter="url(#fSteam)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="16">
+          <path d="M0,0 C-26,-50 26,-100 0,-150 C-26,-200 26,-250 0,-300"/>
+          <path d="M-36,-10 C-60,-60 -10,-110 -36,-160 C-60,-210 -10,-260 -36,-310"/>
+          <path d="M34,-6 C10,-56 60,-106 34,-156 C10,-206 60,-256 34,-306"/>
+        </g>
+        <text id="name" x="0" y="-490" text-anchor="middle" font-family="Ruqaa" font-weight="700" font-size="150" fill="#171210">نادية</text>
+        <path id="ribbon" d="M-115,175 L25,-35 C65,-95 55,-165 0,-165 C-55,-165 -65,-95 -25,-35 L115,175"
+              fill="none" stroke="#ff6fa3" stroke-width="40" stroke-linejoin="round" transform="translate(-178 -540) scale(.25)"/>
+        <text id="miss" x="0" y="-128" text-anchor="middle" font-family="Ruqaa" font-weight="700" font-size="96" fill="#d9467c">وحشتينا</text>
+        <path id="heart" d="M0,22 C-8,14 -34,2 -34,-14 C-34,-26 -24,-33 -14,-33 C-6,-33 -1,-28 0,-23 C1,-28 6,-33 14,-33 C24,-33 34,-26 34,-14 C34,2 8,14 0,22"
+              fill="#ff6fa3" transform="translate(0 -52) scale(.9)"/>
+        <g id="pen">
+          <g transform="rotate(-38)">
+            <path d="M-7,0 L7,0 L12,-34 L-12,-34 Z" fill="#111"/>
+            <rect x="-17" y="-300" width="34" height="270" rx="12" fill="#1c1c1c"/>
+            <rect x="-17" y="-240" width="34" height="34" fill="#e9e3dc"/>
+            <rect x="-11" y="-290" width="6" height="250" rx="3" fill="#fff" opacity=".18"/>
+          </g>
+        </g>
+      </g>
+    </svg>
+  </div>
+
+  <!-- overlays -->
+  <div id="chip"><span class="dot"></span><span id="day">السبت</span><span id="time">٨:١٥ ص</span></div>
+
+  <div class="call" id="call1">نادية!</div>
+  <div class="call" id="call2" style="font-size:84px;color:rgba(255,255,255,.75)">نادية؟</div>
+
+  <div class="cap bottom" id="c1"><span class="line h1 split">كل يوم الساعة ٨:١٥…</span><span class="line h2 split">نفس الاسم.</span></div>
+  <div class="cap bottom" id="c2"><span class="line h1 split">لحد ما في يوم…</span><span class="line h2 split">الاسم اتنادى… ومحدش ردّ.</span></div>
+  <div class="cap bottom" id="c3" style="top:1560px"><span class="line h1 split">واحدة من كل <span class="pink">٨</span> ستات</span><span class="line h2 split">هتواجه سرطان الثدي في حياتها.</span><span class="line note">* المصدر: American Cancer Society</span></div>
+  <div class="cap bottom" id="c4"><span class="line h1 split">بس نادية لاحظت بدري…</span><span class="line h2 split">وكشفت بدري.</span></div>
+  <div class="cap bottom" id="c5"><span class="line h1 split">…فاسمها لسه</span><span class="line h1 split pink">بيتنادى.</span></div>
+
+  <div id="notif">
+    <div class="icon">
+      <svg viewBox="-150 -190 300 380" width="62" height="62"><path d="M-115,175 L25,-35 C65,-95 55,-165 0,-165 C-55,-165 -65,-95 -25,-35 L115,175" fill="none" stroke="#fff" stroke-width="44" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="txt">
+      <div class="t">تذكير <small>دلوقتي</small></div>
+      <div class="b">الفحص الذاتي الشهري — النهارده</div>
+    </div>
+  </div>
+
+  <div id="check">
+    <h3>قبل أسبوعين</h3>
+    <div class="row"><svg viewBox="0 0 58 58"><circle cx="29" cy="29" r="26" fill="none" stroke="#ff6fa3" stroke-width="4"/><path class="tick" d="M17,30 L26,39 L42,20" fill="none" stroke="#ff6fa3" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>عملت الفحص الذاتي</div>
+    <div class="row"><svg viewBox="0 0 58 58"><circle cx="29" cy="29" r="26" fill="none" stroke="#ff6fa3" stroke-width="4"/><path class="tick" d="M17,30 L26,39 L42,20" fill="none" stroke="#ff6fa3" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>لاحظت تغيير بسيط</div>
+    <div class="row"><svg viewBox="0 0 58 58"><circle cx="29" cy="29" r="26" fill="none" stroke="#ff6fa3" stroke-width="4"/><path class="tick" d="M17,30 L26,39 L42,20" fill="none" stroke="#ff6fa3" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>حجزت كشف على طول</div>
+  </div>
+
+  <div id="rew"><div id="scan"></div><div id="track"></div><div id="rewLabel">◀◀ REW</div></div>
+
+  <!-- end card -->
+  <div id="end" style="position:absolute;inset:0">
+    <svg viewBox="0 0 1080 1920" style="position:absolute;inset:0">
+      <circle id="endBg" cx="540" cy="900" r="0" fill="#1e3932"/>
+      <g id="endBadge" transform="translate(540 760)">
+        <circle id="badgeHalo" r="320" fill="url(#gGlow)"/>
+        <circle id="badgeRing" r="262" fill="none" stroke="#ff6fa3" stroke-width="10" stroke-linecap="round" transform="rotate(-90)"/>
+        <circle id="badgeRing2" r="285" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="2" transform="rotate(-90)"/>
+        <g id="logo" clip-path="url(#clipBig)">
+          <circle r="226" fill="#fff"/>
+          <image href="starbucks-logo.png" x="-229" y="-229" width="458" height="460" preserveAspectRatio="xMidYMid slice"/>
+          <rect id="shine" x="-120" y="-260" width="120" height="520" fill="url(#gShine)" transform="rotate(20)"/>
+        </g>
+        <g id="pin" transform="translate(190 190)">
+          <circle r="62" fill="#ff6fa3" stroke="#1e3932" stroke-width="8"/>
+          <path d="M-115,175 L25,-35 C65,-95 55,-165 0,-165 C-55,-165 -65,-95 -25,-35 L115,175" fill="none" stroke="#fff" stroke-width="44" stroke-linejoin="round" transform="translate(0 2) scale(.22)"/>
+        </g>
+      </g>
+    </svg>
+    <div id="endText">
+      <div class="e1 split">خلّي اسمك يفضل يتنادى.</div>
+      <div class="e2 split">افحصي بدري.</div>
+      <div class="e3">#اسمك_يتنادى · أكتوبر الوردي</div>
+    </div>
+    <div id="byline">BY YOUSSEF AYMAN</div>
+  </div>
+
+  <div id="flash"></div>
+  <svg id="grain" viewBox="0 0 1080 1920">
+    <filter id="fNoise"><feTurbulence id="turb" type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="1" stitchTiles="stitch"/></filter>
+    <rect width="100%" height="100%" filter="url(#fNoise)"/>
+  </svg>
+  <div id="vignette"></div>
+  <div id="black"></div>
+
+  <!-- VHS colour split, applied to #world only while rewinding -->
+  <svg width="0" height="0" style="position:absolute">
+    <filter id="rgb" color-interpolation-filters="sRGB">
+      <feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="r"/>
+      <feOffset id="rOff" in="r" dx="14" dy="0" result="r2"/>
+      <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" result="gb"/>
+      <feOffset id="bOff" in="gb" dx="-14" dy="0" result="gb2"/>
+      <feBlend in="r2" in2="gb2" mode="screen"/>
+    </filter>
+  </svg>
+</div>
+
+<div id="ui">
+  <button id="replay">↺ إعادة</button>
+  <button id="pause">⏯ إيقاف/تشغيل</button>
+</div>
+
+<script src="../../dist/gsap.min.js"></script>
+<script src="../../dist/DrawSVGPlugin.min.js"></script>
+<script>
+gsap.registerPlugin(DrawSVGPlugin);
+
+const params = new URLSearchParams(location.search);
+if (params.has("record")) document.documentElement.classList.add("record");
+
+const stage = document.getElementById("stage");
+function fit() {
+  const s = Math.min(innerWidth / 1080, innerHeight / 1920);
+  stage.style.transform = `scale(${s}) translate(-50%, -50%)`;
+}
+addEventListener("resize", fit); fit();
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const NS = "http://www.w3.org/2000/svg";
+
+// deterministic random so every render is identical
+let seed = 11;
+const rand = (a = 0, b = 1) => { seed = (seed * 16807) % 2147483647; return a + (b - a) * (seed / 2147483647); };
+
+function splitWords(el) {
+  [...el.childNodes].forEach(node => {
+    if (node.nodeType === 3) {
+      const frag = document.createDocumentFragment();
+      node.textContent.split(/(\s+)/).forEach(part => {
+        if (!part) return;
+        if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+        const s = document.createElement("span"); s.className = "w"; s.textContent = part; frag.appendChild(s);
+      });
+      node.replaceWith(frag);
+    } else if (node.nodeType === 1 && !node.classList.contains("w")) node.classList.add("w");
+  });
+}
+
+async function init() {
+  await Promise.all([document.fonts.load('700 150px "Ruqaa"'), document.fonts.load('800 80px "Cairo"')]);
+  $$(".split").forEach(splitWords);
+
+  // ---------- bokeh ----------
+  const warm = ["255,190,120", "255,160,90", "255,220,170", "255,140,120", "255,200,140"];
+  const bokeh = [];
+  for (let i = 0; i < 18; i++) {
+    const d = rand(80, 260), b = document.createElement("div");
+    b.className = "b";
+    Object.assign(b.style, {
+      width: d + "px", height: d + "px", left: rand(-60, 1000) + "px", top: rand(0, 1250) + "px",
+      background: `radial-gradient(circle, rgba(${warm[i % 5]},${rand(.25, .55).toFixed(2)}) 0%, rgba(${warm[i % 5]},.12) 55%, rgba(${warm[i % 5]},0) 70%)`
+    });
+    $("#bokeh").appendChild(b); bokeh.push(b);
+  }
+
+  // ---------- 1 in 8 grid (4 x 4) ----------
+  const names = ["سلمى", "ماما", "هبة", "تيتة", "منى", "نادية", "ياسمين", "رحاب", "مريم", "دعاء", "شيماء", "أمل", "نهى", "سارة", "إيمان", "رنا"];
+  const NADIA = 5, LOST = 14, MINI = 0.3;
+  const slots = [];
+  [640, 880, 1120, 1360].forEach(y => [885, 655, 425, 195].forEach(x => slots.push({ x, y })));
+  const shelves = document.createElementNS(NS, "g");
+  [640, 880, 1120, 1360].forEach(y => {
+    const r = document.createElementNS(NS, "rect");
+    Object.entries({ x: 60, y: y + 4, width: 960, height: 6, rx: 3, fill: "#a8774f", opacity: .35 }).forEach(([k, v]) => r.setAttribute(k, v));
+    shelves.appendChild(r);
+  });
+  $("#grid").appendChild(shelves);
+  const minis = slots.map((p, i) => {
+    if (i === NADIA) return null;
+    const g = document.createElementNS(NS, "g");
+    g.innerHTML = `<use href="#cupArt"/><text x="0" y="-490" text-anchor="middle" font-family="Ruqaa" font-weight="700" font-size="150" fill="#171210">${names[i]}</text>`;
+    $("#grid").appendChild(g);
+    gsap.set(g, { svgOrigin: "0 0", x: p.x, y: p.y, scale: 0 });
+    return g;
+  });
+  const lost = minis[LOST];
+  const others = minis.filter(Boolean);
+
+  // ---------- write-on mask for handwriting ----------
+  function makeWriter(el, penOffsetY = 0) {
+    const bb = el.getBBox();
+    const id = "w" + el.id;
+    const clip = document.createElementNS(NS, "clipPath");
+    clip.setAttribute("id", id);
+    const r = document.createElementNS(NS, "rect");
+    r.setAttribute("y", bb.y - 40); r.setAttribute("height", bb.height + 80);
+    clip.appendChild(r);
+    $("svg defs").appendChild(clip);
+    el.setAttribute("clip-path", `url(#${id})`);
+    const state = { p: 0 };
+    const apply = () => {
+      const p = state.p, w = (bb.width + 20) * p;
+      r.setAttribute("x", bb.x + bb.width + 10 - w); r.setAttribute("width", w);
+      if (p > 0 && p < 1) {
+        gsap.set("#pen", { x: bb.x + bb.width - w, y: bb.y + bb.height * .62 + penOffsetY + Math.sin(p * 46) * bb.height * .16, opacity: 1 });
+      }
+    };
+    apply();
+    return {
+      write: (at, dur) => {
+        tl.fromTo(state, { p: 0 }, { p: 1, duration: dur, ease: "power1.inOut", onUpdate: apply, immediateRender: false }, at)
+          .fromTo("#pen", { opacity: 0 }, { opacity: 1, duration: .15, immediateRender: false }, at - .1)
+          .to("#pen", { opacity: 0, duration: .2 }, at + dur);
+      },
+      reset: at => tl.fromTo(state, { p: 1 }, { p: 0, duration: .01, onUpdate: apply, immediateRender: false }, at)
+    };
+  }
+
+  // ---------- initial states ----------
+  gsap.set("#cup", { svgOrigin: "0 0", x: 540, y: 1400 });
+  gsap.set("#pen", { opacity: 0 });
+  gsap.set("#steam path", { opacity: 0 });
+  gsap.set("#ribbon, #heart", { opacity: 1 });
+  gsap.set("#ribbon", { drawSVG: 0 });
+  gsap.set("#heart", { scale: 0, transformOrigin: "50% 50%" });
+  gsap.set(".call", { autoAlpha: 0, scale: .6, transformOrigin: "50% 60%" });
+  gsap.set(".cap", { autoAlpha: 0 });
+  gsap.set(".cap .w, #endText .w", { opacity: 0, y: 50, filter: "blur(12px)" });
+  gsap.set("#notif", { autoAlpha: 0, y: -260 });
+  gsap.set("#check", { autoAlpha: 0, y: 80, scale: .94 });
+  gsap.set("#check .row", { opacity: 0, x: -30 });
+  gsap.set("#check .tick", { drawSVG: 0 });
+  gsap.set("#rew, #flash", { autoAlpha: 0 });
+  gsap.set("#end", { autoAlpha: 0 });
+  gsap.set("#badgeRing, #badgeRing2", { drawSVG: 0 });
+  gsap.set("#logo", { scale: .4, rotation: -25, opacity: 0, transformOrigin: "50% 50%" });
+  gsap.set("#pin", { scale: 0, transformOrigin: "50% 50%" });
+  gsap.set("#badgeHalo, #byline", { opacity: 0 });
+  gsap.set("#leak", { x: 0, y: 0 });
+
+  const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+  window.tl = tl;
+
+  const nameW = makeWriter($("#name"));
+  const missW = makeWriter($("#miss"));
+  missW.reset(0);
+
+  const capIn = (sel, at) => tl.set(sel, { autoAlpha: 1 }, at)
+    .to(`${sel} .w`, { opacity: 1, y: 0, filter: "blur(0px)", duration: .9, stagger: .1 }, at);
+  const capOut = (sel, at) => tl.to(`${sel} .w`, { opacity: 0, y: -30, filter: "blur(10px)", duration: .5, stagger: .03, ease: "power2.in" }, at)
+    .set(sel, { autoAlpha: 0 }, at + .8);
+  const call = (sel, at, hold = .9) => tl.to(sel, { autoAlpha: 1, scale: 1, duration: .45, ease: "back.out(2.2)" }, at)
+    .to(sel, { autoAlpha: 0, scale: 1.08, duration: .4, ease: "power2.in" }, at + hold);
+  const day = (d, t, at) => tl.set("#day", { textContent: d }, at).set("#time", { textContent: t }, at)
+    .fromTo("#chip", { scale: .92 }, { scale: 1, duration: .35, ease: "back.out(3)", immediateRender: false }, at);
+  const cupIn = (at, dur = .5) => tl.fromTo("#cup", { x: -420, rotation: -4 }, { x: 540, rotation: 0, duration: dur, ease: "expo.out", immediateRender: false }, at);
+  const cupOut = (at, dur = .55) => tl.to("#cup", { keyframes: [{ y: 1330, duration: dur * .35, ease: "power2.out" }, { x: 1500, y: 1250, rotation: 8, duration: dur * .65, ease: "power3.in" }] }, at)
+    .set("#cup", { y: 1400, rotation: 0 }, at + dur + .01);
+  function steamPuffs(from, to, strength = .3) {
+    $$("#steam path").forEach((p, i) => {
+      for (let t = from + i * .55; t < to - 1.2; t += 1.8) {
+        tl.fromTo(p, { y: 30, opacity: 0, scaleX: .8 }, { keyframes: [{ opacity: strength, y: -40, duration: .9, ease: "sine.out" }, { opacity: 0, y: -140, scaleX: 1.4, duration: 1.1, ease: "sine.in" }], immediateRender: false }, t);
+      }
+    });
+  }
+
+  // ambient: bokeh drift + slow camera push + light leak (whole film)
+  bokeh.forEach((b, i) => tl.to(b, { y: rand(-120, 120), x: rand(-80, 80), duration: 45, ease: "none" }, 0));
+  tl.to("#leak", { x: 420, y: 160, duration: 45, ease: "none" }, 0)
+    .fromTo("#world", { scale: 1.04 }, { scale: 1.0, duration: 22, ease: "sine.inOut", immediateRender: false }, 0);
+
+  // ① ROUTINE 0 – 9.1s
+  tl.to("#black", { opacity: 0, duration: 1.4, ease: "power2.out" }, 0);
+  day("السبت", "٨:١٥ ص", 0);
+  steamPuffs(.2, 4, .28);
+  nameW.write(1.2, 1.4);
+  capIn("#c1", 1.5);
+  call("#call1", 2.9);
+  cupOut(3.7);
+  nameW.reset(4.29);
+  day("الأحد", "٨:١٥ ص", 4.3); cupIn(4.3); nameW.write(4.85, .8); call("#call1", 5.8, .5); cupOut(6.3, .45); nameW.reset(6.76);
+  day("الاتنين", "٨:١٥ ص", 6.78); cupIn(6.78, .35); nameW.write(7.05, .45); call("#call1", 7.55, .3); cupOut(7.85, .35); nameW.reset(8.21);
+  day("التلات", "٨:١٥ ص", 8.22); cupIn(8.22, .3); nameW.write(8.45, .3); call("#call1", 8.75, .2); cupOut(8.95, .3); nameW.reset(9.26);
+  capOut("#c1", 8.4);
+
+  // ② SILENCE 9.3 – 17s
+  day("الأربع", "٨:١٥ ص", 9.3);
+  cupIn(9.3, 1.1);
+  steamPuffs(9.8, 16.5, .32);
+  nameW.write(10.1, 1.5);
+  call("#call1", 11.9, 1.0);
+  call("#call2", 13.3, 1.1);
+  tl.to("#world", { filter: "saturate(0.12) brightness(0.72)", duration: 3.5, ease: "sine.inOut" }, 12.4)
+    .to("#leak", { opacity: 0, duration: 3 }, 12.4)
+    .to(bokeh, { opacity: .35, duration: 3 }, 12.4);
+  [["٨:٣٠ ص", 14.0], ["٩:١٠ ص", 14.6], ["١٠:٤٥ ص", 15.2], ["١:٠٠ م", 15.8]].forEach(([t, at]) => day("الأربع", t, at));
+  capIn("#c2", 14.2);
+  capOut("#c2", 17.0);
+
+  // ③ ONE IN EIGHT 17.4 – 22.6s
+  const ns = slots[NADIA];
+  tl.to("#world", { filter: "saturate(1) brightness(0.9)", duration: 1.6 }, 17.4)
+    .to("#counter", { opacity: 0, duration: 1 }, 17.4)
+    .to("#chip", { autoAlpha: 0, duration: .5 }, 17.4)
+    .to("#cup", { x: ns.x, y: ns.y, scale: MINI, duration: 1.6, ease: "expo.inOut" }, 17.4)
+    .to(others, { scale: MINI, duration: .7, stagger: { each: .05, from: "center" }, ease: "back.out(1.8)" }, 18.0)
+    .to(["#cup", lost], { opacity: .16, duration: 1.4, ease: "sine.inOut" }, 19.6);
+  capIn("#c3", 19.0);
+  capOut("#c3", 22.3);
+
+  // ④ REWIND 22.8 – 26.4s
+  tl.set("#world", { filter: "url(#rgb) saturate(1.2) brightness(1)" }, 22.8)
+    .set("#rew", { autoAlpha: 1 }, 22.8)
+    .set("#chip", { autoAlpha: 1 }, 22.8)
+    .fromTo("#track", { y: -100 }, { y: 1950, duration: .6, repeat: 5, ease: "none", immediateRender: false }, 22.8)
+    .fromTo("#rewLabel", { opacity: 1 }, { opacity: .25, duration: .25, repeat: 13, yoyo: true, ease: "steps(1)", immediateRender: false }, 22.8)
+    .to(["#cup", lost], { opacity: 1, duration: .4 }, 22.9)
+    .to(others, { scale: 0, duration: .5, stagger: { each: .04, from: "edges" }, ease: "back.in(2)" }, 23.0)
+    .to("#cup", { x: 540, y: 1400, scale: 1, duration: 1.8, ease: "expo.inOut" }, 23.4)
+    .to("#counter", { opacity: 1, duration: .8 }, 24.2);
+  [["الأربع", "١:٠٠ م"], ["الأربع", "٨:١٥ ص"], ["التلات", "٨:١٥ ص"], ["الاتنين", "٨:١٥ ص"], ["الحد", "٨:١٥ ص"], ["السبت", "٨:١٥ ص"],
+   ["الجمعة", "٨:١٥ ص"], ["الخميس", "٨:١٥ ص"], ["الأربع", "٨:١٥ ص"], ["التلات", "٨:١٥ ص"], ["الاتنين", "٨:١٥ ص"], ["الحد", "٨:١٥ ص"],
+   ["السبت", "٨:١٥ ص"], ["الجمعة", "٨:١٥ ص"]].forEach(([d, t], i) => day(d, t, 22.9 + i * .22));
+  tl.to("#rOff", { attr: { dx: 26 }, duration: .2, repeat: 15, yoyo: true, ease: "none" }, 22.8)
+    .to("#bOff", { attr: { dx: -26 }, duration: .2, repeat: 15, yoyo: true, ease: "none" }, 22.8)
+    .to("#flash", { autoAlpha: .85, duration: .08 }, 26.2)
+    .set("#world", { filter: "saturate(1) brightness(1)" }, 26.3)
+    .set("#rew", { autoAlpha: 0 }, 26.3)
+    .to("#flash", { autoAlpha: 0, duration: .6, ease: "power2.out" }, 26.3)
+    .to("#leak", { opacity: 1, duration: 1 }, 26.3)
+    .to(bokeh, { opacity: 1, duration: 1 }, 26.3);
+  day("قبلها بأسبوعين", "٨:١٥ ص", 26.3);
+
+  // ⑤ THE REMINDER 26.4 – 31.4s
+  tl.to("#notif", { autoAlpha: 1, y: 0, duration: .8, ease: "expo.out" }, 26.7)
+    .to("#notif", { y: -40, autoAlpha: 0, duration: .5, ease: "power2.in" }, 28.3)
+    .to("#check", { autoAlpha: 1, y: 0, scale: 1, duration: .8, ease: "expo.out" }, 28.5)
+    .to("#check .row", { opacity: 1, x: 0, duration: .5, stagger: .45 }, 28.8)
+    .to("#check .tick", { drawSVG: "100%", duration: .35, stagger: .45, ease: "power2.out" }, 29.0)
+    .to("#check", { autoAlpha: 0, y: -40, duration: .5, ease: "power2.in" }, 31.0);
+  capIn("#c4", 27.3);
+  capOut("#c4", 30.9);
+  cupOut(31.0, .6);
+  nameW.reset(31.62);
+
+  // ⑥ THE RETURN 31.7 – 38.8s
+  day("بعد ٦ شهور", "٨:١٥ ص", 31.7);
+  cupIn(31.7, .8);
+  steamPuffs(32.2, 37.5, .3);
+  nameW.write(32.6, 1.2);
+  tl.to("#ribbon", { drawSVG: "100%", duration: .6, ease: "power2.inOut" }, 33.9);
+  missW.write(34.6, 1.0);
+  tl.to("#heart", { scale: 1.1, duration: .5, ease: "back.out(3)" }, 35.65);
+  call("#call1", 36.0, .8);
+  cupOut(36.6, .7);
+  tl.to("#world", { filter: "saturate(1.15) brightness(1.08)", duration: 1.5 }, 36.4)
+    .to("#leak", { scale: 1.3, duration: 2 }, 36.4);
+  capIn("#c5", 36.7);
+  capOut("#c5", 38.6);
+
+  // ⑦ END CARD 38.9 – 45s
+  tl.set("#end", { autoAlpha: 1 }, 38.9)
+    .to("#chip", { autoAlpha: 0, duration: .4 }, 38.7)
+    .to("#endBg", { attr: { r: 1250 }, duration: 1.2, ease: "expo.inOut" }, 38.9)
+    .to("#logo", { scale: 1, rotation: 0, opacity: 1, duration: 1.3, ease: "expo.out" }, 39.6)
+    .to("#badgeRing", { drawSVG: "100%", duration: 1.2, ease: "power2.inOut" }, 39.8)
+    .to("#badgeRing2", { drawSVG: "100%", duration: 1.4, ease: "power2.inOut" }, 40.0)
+    .to("#badgeHalo", { opacity: .6, duration: 1.2 }, 40.0)
+    .fromTo("#shine", { x: -260 }, { x: 420, duration: 1.1, ease: "power2.inOut", immediateRender: false }, 40.7)
+    .to("#pin", { scale: 1, duration: .7, ease: "back.out(2.5)" }, 40.9)
+    .fromTo("#endBadge", { scale: .9, transformOrigin: "50% 50%" }, { scale: 1, duration: 3, ease: "power2.out", immediateRender: false }, 39.6)
+    .set("#endText", { autoAlpha: 1 }, 40.6)
+    .to("#endText .e1 .w", { opacity: 1, y: 0, filter: "blur(0px)", duration: .9, stagger: .1 }, 40.6)
+    .to("#endText .e2 .w", { opacity: 1, y: 0, filter: "blur(0px)", duration: .9, stagger: .1 }, 41.3)
+    .fromTo("#endText .e3", { opacity: 0 }, { opacity: 1, duration: 1, immediateRender: false }, 42.0)
+    .to("#byline", { opacity: 1, duration: 1 }, 42.6)
+    .to({}, { duration: 2.4 }, 42.6); // hold to 45s
+
+  // living film grain
+  tl.eventCallback("onUpdate", () => $("#turb").setAttribute("seed", Math.floor(tl.time() * 24)));
+
+  $("#replay").onclick = () => tl.restart();
+  $("#pause").onclick = () => tl.paused(!tl.paused());
+  addEventListener("keydown", e => { if (e.code === "Space") tl.paused(!tl.paused()); });
+  if (!params.has("record")) tl.play();
+}
+init();
+</script>
+</body>
+</html>
