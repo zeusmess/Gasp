@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>صبّة أمل — Pink October</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #ff6fa3;
+    --pink-soft: #ffc2d8;
+    --cream: #f6e7d6;
+    --coffee: #2a170d;
+    --green: #1e3932;
+    --green-bright: #00754a;
+    --bg: #0e0709;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: #000; overflow: hidden; }
+  body { display: grid; place-items: center; font-family: "Cairo", system-ui, sans-serif; }
+
+  /* 1080x1920 story canvas, scaled to fit the window */
+  #stage {
+    position: absolute; left: 50%; top: 50%;
+    width: 1080px; height: 1920px;
+    transform-origin: 0 0;
+    background: var(--bg);
+    overflow: hidden;
+  }
+  #stage svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+  .cap {
+    position: absolute; left: 90px; width: 900px;
+    text-align: center; color: #fff; direction: rtl;
+    line-height: 1.25;
+  }
+  .cap .line { display: block; }
+  .cap .w { display: inline-block; will-change: transform, opacity, filter; }
+  .top { top: 250px; }
+  .bottom { top: 1440px; }
+  .big { font-size: 128px; font-weight: 900; letter-spacing: -1px; }
+  .mid { font-size: 76px; font-weight: 800; }
+  .sub { font-size: 50px; font-weight: 600; color: var(--pink-soft); }
+  .note { font-size: 26px; font-weight: 400; color: rgba(255,255,255,.45); margin-top: 18px; }
+  .pink { color: var(--pink); }
+  .tag { font-size: 44px; font-weight: 800; color: var(--pink); letter-spacing: 1px; }
+
+  #end .brand { font-size: 40px; font-weight: 800; letter-spacing: 6px; white-space: nowrap; color: #fff; direction: ltr; }
+  #end .brand span { color: var(--pink); }
+  #end .cta { font-size: 84px; font-weight: 900; color: #fff; margin-top: 30px; }
+  #end .small { font-size: 34px; font-weight: 600; color: rgba(255,255,255,.7); margin-top: 16px; }
+
+  #grain { position: absolute; inset: 0; pointer-events: none; opacity: .08; mix-blend-mode: overlay; }
+  #vignette {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.55) 100%);
+  }
+
+  #ui {
+    position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 8px; z-index: 10;
+  }
+  #ui button {
+    font: 600 14px "Cairo", sans-serif; color: #fff; background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.2); border-radius: 999px; padding: 8px 18px; cursor: pointer;
+  }
+  .record #ui { display: none; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <svg viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="gCoffee" cx="45%" cy="40%" r="65%">
+        <stop offset="0" stop-color="#6b3f22"/>
+        <stop offset=".55" stop-color="#3e2312"/>
+        <stop offset="1" stop-color="#1f1008"/>
+      </radialGradient>
+      <radialGradient id="gGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0" stop-color="#ff6fa3" stop-opacity=".55"/>
+        <stop offset="1" stop-color="#ff6fa3" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="gSaucer" cx="40%" cy="35%" r="70%">
+        <stop offset="0" stop-color="#ffffff"/>
+        <stop offset="1" stop-color="#e3d6c8"/>
+      </radialGradient>
+      <filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="14" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="fShadow" x="-30%" y="-30%" width="160%" height="160%">
+        <feDropShadow dx="0" dy="30" stdDeviation="30" flood-color="#000" flood-opacity=".55"/>
+      </filter>
+
+      <!-- top-view cup, drawn around (0,0); cloned for the 1-in-8 grid -->
+      <g id="cupTpl">
+        <circle r="420" fill="url(#gSaucer)"/>
+        <circle r="360" fill="none" stroke="#d8c8b6" stroke-width="3"/>
+        <rect x="290" y="-48" width="150" height="96" rx="48" fill="#fbf7f2"/>
+        <circle r="320" fill="#fbf7f2"/>
+        <circle r="286" fill="url(#gCoffee)"/>
+        <circle r="250" fill="none" stroke="#8a5a36" stroke-opacity=".35" stroke-width="10"/>
+      </g>
+      <path id="heartShape" d="M0,110 C-40,70 -170,10 -170,-70 C-170,-130 -120,-165 -70,-165 C-30,-165 -5,-140 0,-115 C5,-140 30,-165 70,-165 C120,-165 170,-130 170,-70 C170,10 40,70 0,110"/>
+      <path id="ribbonShape" d="M-115,175 L25,-35 C65,-95 55,-165 0,-165 C-55,-165 -65,-95 -25,-35 L115,175"/>
+    </defs>
+
+    <rect width="1080" height="1920" fill="var(--bg)"/>
+    <circle id="glow" cx="540" cy="900" r="900" fill="url(#gGlow)" opacity="0"/>
+
+    <!-- 1 in 8 grid (filled by JS) -->
+    <g id="grid"></g>
+    <circle id="pulse" cx="0" cy="0" r="120" fill="none" stroke="#ff6fa3" stroke-width="6" opacity="0"/>
+
+    <!-- hero cup -->
+    <g id="cup" filter="url(#fShadow)">
+      <use href="#cupTpl"/>
+      <g id="ripples" fill="none" stroke="#ff6fa3" stroke-width="5">
+        <circle r="10"/><circle r="10"/><circle r="10"/>
+      </g>
+      <path id="latte" d="M0,110 C-40,70 -170,10 -170,-70 C-170,-130 -120,-165 -70,-165 C-30,-165 -5,-140 0,-115 C5,-140 30,-165 70,-165 C120,-165 170,-130 170,-70 C170,10 40,70 0,110"
+            fill="none" stroke="#f6e7d6" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
+      <g id="orbit" fill="#f6e7d6">
+        <circle cx="0" cy="-215" r="12"/><circle cx="186" cy="107" r="9"/><circle cx="-186" cy="107" r="7"/>
+      </g>
+    </g>
+
+    <!-- 5-minute timer ring -->
+    <circle id="timer" cx="540" cy="900" r="390" fill="none" stroke="#ff6fa3" stroke-width="12"
+            stroke-linecap="round" transform="rotate(-90 540 900)"/>
+
+    <!-- side-view cups (solidarity) -->
+    <g id="sideCups"></g>
+
+    <!-- the drop -->
+    <path id="drop" d="M0,-60 C20,-25 38,0 38,22 C38,45 20,60 0,60 C-20,60 -38,45 -38,22 C-38,0 -20,-25 0,-60 Z"
+          fill="#ff6fa3" filter="url(#fGlow)"/>
+
+    <!-- end card -->
+    <circle id="endBg" cx="540" cy="900" r="0" fill="#1e3932"/>
+    <g id="endBadge" transform="translate(540 820)">
+      <circle id="badgeRing" r="230" fill="none" stroke="#fff" stroke-width="6" transform="rotate(-90)"/>
+      <path id="endRibbon" d="M-115,175 L25,-35 C65,-95 55,-165 0,-165 C-55,-165 -65,-95 -25,-35 L115,175"
+            fill="none" stroke="#ff6fa3" stroke-width="44" stroke-linejoin="round" transform="scale(.8)"/>
+    </g>
+  </svg>
+
+  <!-- captions -->
+  <div class="cap top" id="c1"><span class="line mid split">كل أكتوبر…</span></div>
+  <div class="cap top" id="c2"><span class="line mid split">فيه حكاية بتبدأ بـ<span class="pink">نقطة</span>.</span></div>
+  <div class="cap top" id="c3">
+    <span class="line mid split">اللي بيبان بدري…</span>
+    <span class="line mid split pink">بيتلحق بدري.</span>
+  </div>
+  <div class="cap bottom" id="c3b"><span class="line sub split">الاكتشاف المبكر بيفرق.</span></div>
+
+  <div class="cap top" id="c4"><span class="line big split">١ من كل <span class="pink">٨</span></span></div>
+  <div class="cap bottom" id="c4b">
+    <span class="line sub split">ستات هتواجه سرطان الثدي في حياتها</span>
+    <span class="line note">* المصدر: American Cancer Society</span>
+  </div>
+
+  <div class="cap top" id="c5"><span class="line big split"><span class="pink">٥</span> دقايق</span><span class="line mid split">في الشهر</span></div>
+  <div class="cap bottom" id="c5b">
+    <span class="line sub split">أقل من وقت كوباية قهوتك…</span>
+    <span class="line mid split">افحصي نفسك.</span>
+  </div>
+
+  <div class="cap top" id="c6">
+    <span class="line big split">مش لوحدك.</span>
+    <span class="line mid split">إحنا معاكِ… في كل كوباية.</span>
+  </div>
+  <div class="cap bottom" id="c6b" style="top:1560px"><span class="line tag split">#أكتوبر_الوردي</span></div>
+
+  <div class="cap" id="end" style="top:1180px">
+    <div class="brand">STARBUCKS <span>×</span> PINK OCTOBER</div>
+    <div class="cta split">افحصي. شاركي. ادعمي.</div>
+    <div class="small">شهر التوعية بسرطان الثدي</div>
+  </div>
+
+  <svg id="grain" viewBox="0 0 1080 1920">
+    <filter id="fNoise"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" stitchTiles="stitch"/></filter>
+    <rect width="100%" height="100%" filter="url(#fNoise)"/>
+  </svg>
+  <div id="vignette"></div>
+</div>
+
+<div id="ui">
+  <button id="replay">↺ إعادة</button>
+  <button id="pause">⏯ إيقاف/تشغيل</button>
+</div>
+
+<!-- GSAP from this repo's dist (all plugins are free since 3.13) -->
+<script src="../../dist/gsap.min.js"></script>
+<script src="../../dist/DrawSVGPlugin.min.js"></script>
+<script src="../../dist/MorphSVGPlugin.min.js"></script>
+<script>
+gsap.registerPlugin(DrawSVGPlugin, MorphSVGPlugin);
+
+const params = new URLSearchParams(location.search);
+if (params.has("record")) document.documentElement.classList.add("record");
+
+// fit 1080x1920 into the window
+const stage = document.getElementById("stage");
+function fit() {
+  const s = Math.min(innerWidth / 1080, innerHeight / 1920);
+  stage.style.transform = `scale(${s}) translate(-50%, -50%)`;
+}
+addEventListener("resize", fit); fit();
+
+// wrap words (not letters — keeps Arabic ligatures intact)
+function splitWords(el) {
+  [...el.childNodes].forEach(node => {
+    if (node.nodeType === 3) {
+      const frag = document.createDocumentFragment();
+      node.textContent.split(/(\s+)/).forEach(part => {
+        if (!part) return;
+        if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+        const s = document.createElement("span"); s.className = "w"; s.textContent = part; frag.appendChild(s);
+      });
+      node.replaceWith(frag);
+    } else if (node.nodeType === 1 && !node.classList.contains("w")) {
+      node.classList.add("w");
+    }
+  });
+}
+document.querySelectorAll(".split").forEach(splitWords);
+
+const NS = "http://www.w3.org/2000/svg";
+const $ = s => document.querySelector(s);
+
+// --- 1 in 8 grid: 4 x 2, the hero cup lands in slot 5 ---
+const slots = [];
+[800, 1040].forEach(y => [870, 650, 430, 210].forEach(x => slots.push({ x, y })));
+const HERO_SLOT = 5, MINI = 0.24;
+const minis = slots.map((p, i) => {
+  if (i === HERO_SLOT) return null;
+  const g = document.createElementNS(NS, "g");
+  g.innerHTML = `<use href="#cupTpl"/><use href="#heartShape" fill="none" stroke="#f6e7d6" stroke-width="44" stroke-linecap="round"/>`;
+  $("#grid").appendChild(g);
+  gsap.set(g, { svgOrigin: "0 0", x: p.x, y: p.y, scale: 0 });
+  return g;
+}).filter(Boolean);
+
+// --- side-view cups ---
+const sideX = [250, 540, 830], sideS = [0.8, 1, 0.8];
+const sides = sideX.map((x, i) => {
+  const g = document.createElementNS(NS, "g");
+  g.innerHTML = `
+    <path d="M-115,-270 L115,-270 L92,0 L-92,0 Z" fill="#fbf7f2"/>
+    <rect x="-130" y="-305" width="260" height="42" rx="14" fill="#efe6dc"/>
+    <rect x="-108" y="-332" width="216" height="32" rx="10" fill="#e3d6c8"/>
+    <path d="M-108,-195 L108,-195 L98,-80 L-98,-80 Z" fill="#c9a27a"/>
+    <path class="sleeve" d="M-108,-195 L108,-195 L98,-80 L-98,-80 Z" fill="#ff6fa3"/>
+    <path class="mini-ribbon" d="M-115,175 L25,-35 C65,-95 55,-165 0,-165 C-55,-165 -65,-95 -25,-35 L115,175"
+      fill="none" stroke="#fff" stroke-width="40" transform="translate(0 -137) scale(.22)"/>`;
+  $("#sideCups").appendChild(g);
+  gsap.set(g, { svgOrigin: "0 0", x, y: 2300, scale: sideS[i] });
+  gsap.set(g.querySelector(".sleeve"), { scaleY: 0, transformOrigin: "50% 100%" });
+  gsap.set(g.querySelector(".mini-ribbon"), { drawSVG: 0 });
+  return g;
+});
+
+// --- initial states ---
+gsap.set("#cup", { svgOrigin: "0 0", x: 540, y: 900, scale: 0.6, opacity: 0 });
+gsap.set("#drop", { svgOrigin: "0 0", x: 540, y: -120 });
+gsap.set("#latte", { drawSVG: 0 });
+gsap.set("#orbit", { opacity: 0, svgOrigin: "0 0" });
+gsap.set("#timer", { drawSVG: 0 });
+gsap.set("#ripples circle", { opacity: 0 });
+gsap.set("#badgeRing, #endRibbon", { drawSVG: 0 });
+gsap.set(".cap", { autoAlpha: 0 });
+gsap.set(".cap .w", { opacity: 0, y: 60, filter: "blur(12px)" });
+
+// caption helpers
+function capIn(sel, at) {
+  tl.set(sel, { autoAlpha: 1 }, at)
+    .to(`${sel} .w`, { opacity: 1, y: 0, filter: "blur(0px)", duration: .8, stagger: .09 }, at);
+}
+function capOut(sel, at) {
+  tl.to(`${sel} .w`, { opacity: 0, y: -40, filter: "blur(10px)", duration: .45, stagger: .03, ease: "power2.in" }, at)
+    .set(sel, { autoAlpha: 0 }, at + .7);
+}
+
+const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+window.tl = tl; // used by render.mjs
+
+// ① 0–4s : the drop
+capIn("#c1", .3);
+tl.to("#drop", { y: 900, duration: 1.4, ease: "power2.in" }, .9)
+  .to("#drop", { scaleY: .4, scaleX: 1.6, opacity: 0, duration: .25, ease: "power1.out" }, 2.3)
+  .to("#cup", { scale: 1, opacity: 1, duration: 1.1, ease: "back.out(1.4)" }, 2.3)
+  .to("#glow", { opacity: 1, duration: 1.5 }, 2.3)
+  .to("#ripples circle", { keyframes: { r: [10, 280], opacity: [1, 0] }, duration: 1.6, stagger: .3, ease: "power2.out" }, 2.3);
+capOut("#c1", 2.2);
+capIn("#c2", 2.8);
+
+// ② 4–10s : latte heart → pink ribbon
+capOut("#c2", 4.6);
+tl.to("#latte", { drawSVG: "100%", duration: 2.2, ease: "power2.inOut" }, 4.6);
+capIn("#c3", 5.2);
+tl.to("#latte", { morphSVG: "#ribbonShape", stroke: "#ff6fa3", duration: 1.4, ease: "expo.inOut" }, 7.2)
+  .to("#cup", { rotation: 12, duration: 1.4, ease: "expo.inOut" }, 7.2)
+  .to("#latte", { filter: "url(#fGlow)", duration: .01 }, 8.4);
+capIn("#c3b", 8.2);
+
+// ③ 10–15.5s : 1 in 8
+capOut("#c3", 10); capOut("#c3b", 10);
+const hero = slots[HERO_SLOT];
+tl.to("#cup", { x: hero.x, y: hero.y, scale: MINI, rotation: 0, duration: 1.2, ease: "expo.inOut" }, 10.2)
+  .to("#glow", { opacity: .25, duration: 1 }, 10.2)
+  .to(minis, { scale: MINI, duration: .7, stagger: { each: .08, from: "random" }, ease: "back.out(2)" }, 10.8);
+capIn("#c4", 11.4);
+capIn("#c4b", 12.2);
+tl.set("#pulse", { attr: { cx: hero.x, cy: hero.y } }, 12.6)
+  .to("#pulse", { keyframes: { attr: { r: [110, 170] }, opacity: [1, 0] }, duration: 1.2, repeat: 1, ease: "power1.out" }, 12.6)
+  .to(minis, { opacity: .35, duration: .6 }, 12.8);
+
+// ④ 15.5–21.5s : 5 minutes a month
+capOut("#c4", 15.3); capOut("#c4b", 15.3);
+tl.to(minis, { scale: 0, duration: .5, stagger: .04, ease: "back.in(2)" }, 15.4)
+  .to("#cup", { x: 540, y: 900, scale: .7, duration: 1.1, ease: "expo.inOut" }, 15.7)
+  .to("#glow", { opacity: .8, duration: 1 }, 15.7)
+  .to("#timer", { drawSVG: "100%", duration: 4.2, ease: "none" }, 16.6)
+  .to("#orbit", { opacity: 1, duration: .5 }, 16.6)
+  .to("#orbit", { rotation: 720, duration: 4.2, ease: "none" }, 16.6);
+capIn("#c5", 16.2);
+capIn("#c5b", 17.4);
+
+// ⑤ 21.5–27s : solidarity — sleeves turn pink
+capOut("#c5", 21.2); capOut("#c5b", 21.2);
+tl.to("#timer", { opacity: 0, duration: .5 }, 21.3)
+  .to("#cup", { y: -700, rotation: -30, duration: 1, ease: "expo.in" }, 21.3)
+  .to(sides, { y: 1330, duration: 1.1, stagger: .12, ease: "expo.out" }, 22)
+  .to(sides.map(g => g.querySelector(".sleeve")), { scaleY: 1, duration: .9, stagger: .25, ease: "power2.inOut" }, 23)
+  .to(sides.map(g => g.querySelector(".mini-ribbon")), { drawSVG: "100%", duration: .7, stagger: .25 }, 23.6)
+  .to(sides, { y: 1300, duration: .4, stagger: .25, yoyo: true, repeat: 1, ease: "sine.inOut" }, 23.6);
+capIn("#c6", 22.4);
+capIn("#c6b", 24.6);
+
+// ⑥ 27–33s : end card
+capOut("#c6", 27); capOut("#c6b", 27);
+tl.to(sides, { y: 2300, duration: .8, stagger: .06, ease: "expo.in" }, 27)
+  .to("#endBg", { attr: { r: 1250 }, duration: 1.2, ease: "expo.inOut" }, 27.4)
+  .to("#badgeRing", { drawSVG: "100%", duration: 1.2, ease: "power2.inOut" }, 28.2)
+  .to("#endRibbon", { drawSVG: "100%", duration: 1.3, ease: "power2.inOut" }, 28.5)
+  .fromTo("#endBadge", { scale: .85, transformOrigin: "50% 50%" }, { scale: 1, duration: 2, ease: "power2.out" }, 28.2);
+capIn("#end", 29.2);
+tl.to({}, { duration: 3 }, 30); // hold the end card until ~33s
+
+// controls
+$("#replay").onclick = () => tl.restart();
+$("#pause").onclick = () => tl.paused(!tl.paused());
+addEventListener("keydown", e => { if (e.code === "Space") tl.paused(!tl.paused()); });
+
+if (!params.has("record")) {
+  document.fonts.ready.then(() => tl.play());
+}
+</script>
+</body>
+</html>
