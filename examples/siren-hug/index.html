@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>حضن وردي — Siren Hug</title>
+<style>
+  @font-face { font-family: "Cairo"; src: url("fonts/Cairo.ttf") format("truetype"); font-weight: 200 1000; }
+  :root { --pink: #ff6fa3; --pink-soft: #ffc2d8; --cream: #f7ede3; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: #000; overflow: hidden; }
+  body { font-family: "Cairo", sans-serif; }
+  #stage { position: absolute; left: 50%; top: 50%; width: 1080px; height: 1920px; transform-origin: 0 0; overflow: hidden; background: #0b0604; }
+  #world { position: absolute; inset: 0; }
+  #world > * { position: absolute; inset: 0; }
+  svg { width: 100%; height: 100%; }
+  #bokeh .b { position: absolute; border-radius: 50%; mix-blend-mode: screen; }
+  #leak { background: radial-gradient(closest-side, rgba(255,150,120,.32), rgba(255,120,90,0) 70%);
+    width: 1500px; height: 1500px; left: -450px; top: -250px; inset: auto; mix-blend-mode: screen; }
+
+  .cap { position: absolute; left: 70px; width: 940px; text-align: center; color: #fff; line-height: 1.3; direction: rtl; }
+  .cap .line { display: block; }
+  .cap .w { display: inline-block; }
+  .h1 { font-size: 82px; font-weight: 900; }
+  .h2 { font-size: 56px; font-weight: 700; color: var(--pink-soft); }
+  .pink { color: var(--pink); }
+  #endText { position: absolute; top: 1500px; left: 60px; width: 960px; text-align: center; color: #fff; }
+  #endText .chip { display: inline-flex; gap: 14px; align-items: center; padding: 12px 30px; border-radius: 999px;
+    background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); font-size: 32px; font-weight: 700; }
+  #endText .chip i { width: 14px; height: 14px; border-radius: 50%; background: var(--pink); display: block; }
+  #endText .e1 { font-size: 104px; font-weight: 900; margin-top: 18px; }
+  #endText .e3 { font-size: 30px; font-weight: 600; color: rgba(255,255,255,.65); margin-top: 6px; }
+  #byline { position: absolute; top: 1858px; width: 100%; text-align: center; direction: ltr; font-size: 28px; font-weight: 600;
+    letter-spacing: 8px; color: rgba(255,255,255,.7); }
+  #grain { position: absolute; inset: 0; opacity: .08; mix-blend-mode: overlay; pointer-events: none; }
+  #vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 75% 60% at 50% 45%, transparent 45%, rgba(0,0,0,.7) 100%); }
+  #black { position: absolute; inset: 0; background: #000; }
+  #ui { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 10; }
+  #ui button { font: 600 14px "Cairo"; color: #fff; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2); border-radius: 999px; padding: 8px 18px; }
+  .record #ui { display: none; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <div style="background: radial-gradient(ellipse 90% 60% at 50% 32%, #4a2c1c 0%, #26150d 55%, #0c0604 100%)"></div>
+    <div id="bokeh"></div>
+    <div id="leak"></div>
+    <svg viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="gBody" x1="0" x2="1">
+          <stop offset="0" stop-color="#bdb2a6"/><stop offset=".18" stop-color="#ece6de"/><stop offset=".42" stop-color="#ffffff"/>
+          <stop offset=".72" stop-color="#ebe4dc"/><stop offset="1" stop-color="#a99d91"/>
+        </linearGradient>
+        <linearGradient id="gLid" x1="0" x2="1">
+          <stop offset="0" stop-color="#cfc6bd"/><stop offset=".4" stop-color="#ffffff"/><stop offset=".75" stop-color="#e6ded5"/><stop offset="1" stop-color="#b3a89c"/>
+        </linearGradient>
+        <linearGradient id="gCounter" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#5a3622"/><stop offset=".04" stop-color="#3a2216"/><stop offset="1" stop-color="#130a06"/>
+        </linearGradient>
+        <radialGradient id="gShadow"><stop offset="0" stop-color="#000" stop-opacity=".65"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+        <radialGradient id="gPinkGlow"><stop offset="0" stop-color="#ff6fa3" stop-opacity=".75"/><stop offset="1" stop-color="#ff6fa3" stop-opacity="0"/></radialGradient>
+        <radialGradient id="gHalo"><stop offset="0" stop-color="#ffd6e6" stop-opacity=".55"/><stop offset=".5" stop-color="#ff6fa3" stop-opacity=".18"/><stop offset="1" stop-color="#ff6fa3" stop-opacity="0"/></radialGradient>
+
+        <!-- recolours a white layer and adds a coloured glow; flood colours are animated -->
+        <filter id="tint" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+          <feFlood id="tintFlood" flood-color="#ffffff" result="c"/>
+          <feComposite in="c" in2="SourceAlpha" operator="in" result="col"/>
+          <feGaussianBlur id="glowBlur" in="col" stdDeviation="10" result="b"/>
+          <feFlood id="glowFlood" flood-color="#ff6fa3" flood-opacity="0" result="gc"/>
+          <feComposite in="gc" in2="b" operator="in" result="glow"/>
+          <feMerge><feMergeNode in="glow"/><feMergeNode in="glow"/><feMergeNode in="col"/></feMerge>
+        </filter>
+        <filter id="shadowF" x="-30%" y="-30%" width="160%" height="160%">
+          <feFlood flood-color="#000" result="c"/><feComposite in="c" in2="SourceAlpha" operator="in" result="s"/>
+          <feGaussianBlur in="s" stdDeviation="14"/>
+        </filter>
+        <filter id="fSoft"><feGaussianBlur stdDeviation="6"/></filter>
+
+        <g id="cupArt">
+          <ellipse cx="0" cy="6" rx="260" ry="34" fill="url(#gShadow)"/>
+          <path d="M-224,-742 L224,-742 L170,0 L-170,0 Z" fill="url(#gBody)"/>
+          <path d="M-224,-742 L-208,-742 L-156,0 L-170,0 Z" fill="#000" opacity=".05"/>
+          <rect x="-244" y="-786" width="488" height="48" rx="18" fill="url(#gLid)"/>
+          <path d="M-232,-786 C-226,-842 226,-842 232,-786 Z" fill="url(#gLid)"/>
+          <path d="M-200,-812 C-120,-830 120,-830 200,-812" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="4"/>
+          <ellipse cx="96" cy="-826" rx="34" ry="8" fill="#5b4a40"/>
+        </g>
+        <!-- siren parts share one frame: the logo canvas centred on (0,0) -->
+        <g id="coreParts">
+          <image href="parts/torso.png" x="-640" y="-640" width="1280" height="1287"/>
+          <image href="parts/hair.png"  x="-640" y="-640" width="1280" height="1287"/>
+          <image href="parts/face.png"  x="-640" y="-640" width="1280" height="1287"/>
+          <image href="parts/crown.png" x="-640" y="-640" width="1280" height="1287"/>
+        </g>
+        <path id="ribbonPath" d="M-115,175 L25,-35 C65,-95 55,-165 0,-165 C-55,-165 -65,-95 -25,-35 L115,175"/>
+        <path id="heartPath" d="M0,22 C-8,14 -34,2 -34,-14 C-34,-26 -24,-33 -14,-33 C-6,-33 -1,-28 0,-23 C1,-28 6,-33 14,-33 C24,-33 34,-26 34,-14 C34,2 8,14 0,22"/>
+      </defs>
+
+      <rect x="0" y="1460" width="1080" height="460" fill="url(#gCounter)"/>
+      <rect x="0" y="1458" width="1080" height="4" fill="#a8774f" opacity=".55"/>
+
+      <circle id="halo" cx="540" cy="760" r="620" fill="url(#gHalo)" opacity="0"/>
+
+      <!-- siren core BEHIND the cup (after she has flown over it) -->
+      <g filter="url(#tint)"><g class="sirenT" id="coreBack" opacity="0"><use href="#coreParts"/></g></g>
+
+      <!-- the cup -->
+      <g id="cup">
+        <use href="#cupArt"/>
+        <g transform="translate(0 -330)">
+          <circle r="86" fill="#00704a"/>
+          <circle r="86" fill="url(#gPinkGlow)" id="logoGlow" opacity="0"/>
+          <circle r="80" fill="none" stroke="#fff" stroke-opacity=".0" stroke-width="2" id="logoRing"/>
+        </g>
+        <g id="hugRibbon" transform="translate(0 -560)">
+          <path id="ribbonStroke" d="M-115,175 L25,-35 C65,-95 55,-165 0,-165 C-55,-165 -65,-95 -25,-35 L115,175" fill="none" stroke="#ff6fa3" stroke-width="40" stroke-linejoin="round" transform="scale(.42)"/>
+        </g>
+      </g>
+
+      <!-- shadow the lifting siren casts on the cup -->
+      <g filter="url(#shadowF)" opacity="0" id="sirenShadow"><g class="sirenT shadowT"><image href="parts/siren.png" x="-640" y="-640" width="1280" height="1287"/></g></g>
+
+      <!-- siren core IN FRONT (while she leaves the logo) + tails (always in front: they are the arms) -->
+      <g filter="url(#tint)" id="frontLayer">
+        <g class="sirenT" id="coreFront"><use href="#coreParts"/></g>
+        <g class="sirenT">
+          <g id="tailL"><image href="parts/tailL.png" x="-640" y="-640" width="1280" height="1287"/></g>
+          <g id="tailR"><image href="parts/tailR.png" x="-640" y="-640" width="1280" height="1287"/></g>
+        </g>
+      </g>
+
+      <g id="sparks"></g>
+      <g id="hearts"></g>
+    </svg>
+  </div>
+
+  <div class="cap" id="c1" style="top:250px"><span class="line h2 split">أحيانًا…</span><span class="line h1 split">كلنا محتاجين <span class="pink">حضن</span>.</span></div>
+  <div class="cap" id="c2" style="top:1560px"><span class="line h1 split">ستاربكس معاكِ…</span><span class="line h2 split">في كل كوباية <span class="pink">حضن</span>.</span></div>
+  <div id="endText">
+    <div class="chip"><i></i>أكتوبر الوردي · شهر التوعية بسرطان الثدي</div>
+    <div class="e1 split">افحصي <span class="pink">بدري.</span></div>
+    <div class="e3">#حضن_وردي</div>
+  </div>
+  <div id="byline">— BY YOUSSEF AYMAN —</div>
+
+  <svg id="grain" viewBox="0 0 1080 1920"><filter id="fN"><feTurbulence id="turb" type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="1" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#fN)"/></svg>
+  <div id="vignette"></div>
+  <div id="black"></div>
+</div>
+<div id="ui"><button id="replay">↺ إعادة</button><button id="pause">⏯</button></div>
+
+<script src="../../dist/gsap.min.js"></script>
+<script src="../../dist/DrawSVGPlugin.min.js"></script>
+<script>
+gsap.registerPlugin(DrawSVGPlugin);
+const params = new URLSearchParams(location.search);
+if (params.has("record")) document.documentElement.classList.add("record");
+const stage = document.getElementById("stage");
+const fit = () => { const s = Math.min(innerWidth / 1080, innerHeight / 1920); stage.style.transform = `scale(${s}) translate(-50%, -50%)`; };
+addEventListener("resize", fit); fit();
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const NS = "http://www.w3.org/2000/svg";
+let seed = 5; const rand = (a = 0, b = 1) => { seed = (seed * 16807) % 2147483647; return a + (b - a) * seed / 2147483647; };
+
+function splitWords(el) {
+  [...el.childNodes].forEach(node => {
+    if (node.nodeType === 3) {
+      const frag = document.createDocumentFragment();
+      node.textContent.split(/(\s+)/).forEach(part => {
+        if (!part) return;
+        if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+        const s = document.createElement("span"); s.className = "w"; s.textContent = part; frag.appendChild(s);
+      });
+      node.replaceWith(frag);
+    } else if (node.nodeType === 1 && !node.classList.contains("w")) node.classList.add("w");
+  });
+}
+
+async function init() {
+  await document.fonts.load('900 80px "Cairo"');
+  await Promise.all($$("image").map(img => new Promise(r => {
+    const i = new Image(); i.onload = i.onerror = r; i.src = img.getAttribute("href");
+  })));
+  $$(".split").forEach(splitWords);
+
+  // café bokeh
+  const warm = ["255,190,120", "255,160,90", "255,220,170", "255,140,120"];
+  const bokeh = [];
+  for (let i = 0; i < 16; i++) {
+    const d = rand(80, 260), b = document.createElement("div"), c = warm[i % 4];
+    b.className = "b";
+    Object.assign(b.style, { width: d + "px", height: d + "px", left: rand(-60, 1000) + "px", top: rand(0, 1300) + "px",
+      background: `radial-gradient(circle, rgba(${c},${rand(.22, .5).toFixed(2)}) 0%, rgba(${c},.1) 55%, rgba(${c},0) 70%)` });
+    $("#bokeh").appendChild(b); bokeh.push(b);
+  }
+  // sparkles + hearts (positions seeded)
+  const sparks = Array.from({ length: 26 }, () => {
+    const c = document.createElementNS(NS, "circle");
+    c.setAttribute("r", rand(3, 7).toFixed(1)); c.setAttribute("fill", rand() > .4 ? "#ffd6e6" : "#fff");
+    $("#sparks").appendChild(c); return c;
+  });
+  const hearts = Array.from({ length: 9 }, () => {
+    const u = document.createElementNS(NS, "use");
+    u.setAttribute("href", "#heartPath"); u.setAttribute("fill", "#ff6fa3");
+    $("#hearts").appendChild(u); return u;
+  });
+
+  // ---------------- layout constants ----------------
+  const CUP = { x: 540, y: 1460 };
+  const LOGO = { x: 540, y: CUP.y - 330, s: 172 / 1280 };     // the siren sits exactly on the cup's logo
+  const FINAL = { x: 540, y: 596, s: 0.6 };                    // behind the cup, face above the lid
+  const PIVOT_L = "330px 400px", PIVOT_R = "950px 400px";       // shoulders (logo px from the top-left)
+
+  gsap.set("#cup", { svgOrigin: "0 0", x: CUP.x, y: CUP.y });
+  gsap.set(".sirenT", { svgOrigin: "0 0", x: LOGO.x, y: LOGO.y, scale: LOGO.s });
+  gsap.set("#tailL", { transformOrigin: PIVOT_L }); gsap.set("#tailR", { transformOrigin: PIVOT_R });
+  gsap.set("#ribbonStroke", { drawSVG: 0 });
+  gsap.set(sparks, { opacity: 0 }); gsap.set(hearts, { opacity: 0 });
+  gsap.set(".cap", { autoAlpha: 0 });
+  gsap.set(".w", { opacity: 0, y: 50, filter: "blur(12px)" });
+  gsap.set("#endText, #byline", { autoAlpha: 0 });
+  gsap.set("#endText .chip, #endText .e3", { opacity: 0, y: 30 });
+
+  const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+  window.tl = tl;
+  const capIn = (sel, at) => tl.set(sel, { autoAlpha: 1 }, at).to(`${sel} .w`, { opacity: 1, y: 0, filter: "blur(0px)", duration: .9, stagger: .1 }, at);
+  const capOut = (sel, at) => tl.to(`${sel} .w`, { opacity: 0, y: -30, filter: "blur(10px)", duration: .5, stagger: .03, ease: "power2.in" }, at).set(sel, { autoAlpha: 0 }, at + .8);
+  const S = ".sirenT:not(.shadowT)";
+
+  // ambient: bokeh drift, light leak, slow camera push
+  bokeh.forEach(b => tl.to(b, { x: rand(-80, 80), y: rand(-120, 120), duration: 16, ease: "none" }, 0));
+  tl.to("#leak", { x: 380, y: 140, duration: 16, ease: "none" }, 0)
+    .fromTo("#world", { scale: 1.06, transformOrigin: "50% 60%" }, { scale: 1, duration: 9, ease: "sine.inOut", immediateRender: false }, 0)
+    .to("#black", { opacity: 0, duration: 1.2, ease: "power2.out" }, 0);
+
+  // ① the logo wakes up  1.0 – 2.6
+  capIn("#c1", 1.0);
+  tl.to("#logoGlow", { keyframes: [{ opacity: .9, duration: .35 }, { opacity: .35, duration: .4 }, { opacity: 1, duration: .35 }], ease: "sine.inOut" }, 1.3)
+    .to("#glowFlood", { attr: { "flood-opacity": .9 }, duration: .8 }, 1.4)
+    .to("#glowBlur", { attr: { stdDeviation: 4 }, duration: .8 }, 1.4);
+
+  // ② she steps out of the logo  2.6 – 4.3
+  tl.to(S, { y: LOGO.y - 150, scale: .22, rotation: -4, duration: 1.4, ease: "expo.out" }, 2.6)
+    .to("#sirenShadow", { opacity: .55, duration: .6 }, 2.6)
+    .to(".shadowT", { x: LOGO.x + 18, y: LOGO.y - 40, scale: .2, rotation: -4, duration: 1.4, ease: "expo.out" }, 2.6)
+    .to("#logoGlow", { opacity: .25, duration: 1 }, 2.8)
+    .to("#halo", { opacity: .8, duration: 1.5 }, 2.6);
+  capOut("#c1", 3.2);
+  sparks.forEach((c, i) => {
+    const a = rand(0, Math.PI * 2), d = rand(120, 380);
+    tl.fromTo(c, { attr: { cx: LOGO.x, cy: LOGO.y }, opacity: 0 },
+      { attr: { cx: LOGO.x + Math.cos(a) * d, cy: LOGO.y - 120 + Math.sin(a) * d * .8 }, keyframes: { opacity: [0, 1, 0] }, duration: rand(1.1, 1.8), ease: "power2.out", immediateRender: false }, 2.65 + i * .02);
+  });
+
+  // ③ she rises over the cup, then settles behind it  4.0 – 6.6
+  tl.to(S, { x: 540, y: 330, scale: .42, rotation: 3, duration: 1.3, ease: "power2.inOut" }, 4.0)
+    .to("#sirenShadow", { opacity: 0, duration: .5 }, 4.0)
+    .set("#coreBack", { opacity: 1 }, 5.3).set("#coreFront", { opacity: 0 }, 5.3)   // swap layers while she is clear of the cup
+    .to(S, { x: FINAL.x, y: FINAL.y, scale: FINAL.s, rotation: 0, duration: 1.3, ease: "power3.inOut" }, 5.3)
+    .to("#tailL", { rotation: 12, duration: 1.1, ease: "power2.inOut" }, 5.4)             // arms open
+    .to("#tailR", { rotation: -12, duration: 1.1, ease: "power2.inOut" }, 5.4)
+    .to("#tintFlood", { attr: { "flood-color": "#0f8a5f" }, duration: 1.2 }, 5.2)          // white spirit → Starbucks green
+    .to("#glowFlood", { attr: { "flood-color": "#fff3e6", "flood-opacity": .55 }, duration: 1.2 }, 5.2)
+    .to("#glowBlur", { attr: { stdDeviation: 3 }, duration: 1.2 }, 5.2);
+
+  // ④ the hug  6.9 – 8.4
+  tl.to("#tailL", { rotation: -20, duration: .9, ease: "back.out(2.2)" }, 6.9)           // arms wrap round the cup
+    .to("#tailR", { rotation: 20, duration: .9, ease: "back.out(2.2)" }, 6.9)
+    .to("#cup", { keyframes: [{ scaleX: .955, scaleY: 1.015, duration: .18, ease: "power2.out" }, { scaleX: 1, scaleY: 1, duration: .7, ease: "elastic.out(1, .4)" }] }, 7.2)
+    .to(S, { keyframes: [{ y: FINAL.y + 14, duration: .2 }, { y: FINAL.y, duration: .6, ease: "power2.out" }] }, 7.2)
+    .to("#glowFlood", { attr: { "flood-color": "#ff6fa3", "flood-opacity": .9 }, duration: .8 }, 7.25)
+    .to("#glowBlur", { attr: { stdDeviation: 9 }, duration: .8 }, 7.25)
+    .to("#halo", { opacity: 1, scale: 1.1, transformOrigin: "50% 50%", duration: 1.2 }, 7.25)
+    .to("#leak", { opacity: 1.4, duration: 1 }, 7.25)
+    .to("#ribbonStroke", { drawSVG: "100%", duration: .9, ease: "power2.inOut" }, 7.6)
+    .to("#glowBlur", { attr: { stdDeviation: 5 }, duration: 1.4 }, 8.4);
+  hearts.forEach((h, i) => {
+    const x0 = 540 + rand(-160, 160), y0 = 820 + rand(-40, 60);
+    tl.fromTo(h, { attr: { transform: `translate(${x0} ${y0}) scale(.2)` }, opacity: 0 },
+      { attr: { transform: `translate(${x0 + rand(-120, 120)} ${y0 - rand(260, 520)}) scale(${rand(.6, 1.1).toFixed(2)})` },
+        keyframes: { opacity: [0, 1, 1, 0] }, duration: rand(1.8, 2.6), ease: "sine.out", immediateRender: false }, 7.5 + i * .16);
+  });
+  capIn("#c2", 8.6);
+  capOut("#c2", 11.7);
+
+  // ⑤ end card  12.0 – 16
+  tl.to("#world", { scale: 1.04, transformOrigin: "50% 45%", duration: 4, ease: "sine.inOut" }, 12.0)
+    .set("#endText", { autoAlpha: 1 }, 12.6)
+    .to("#endText .chip", { opacity: 1, y: 0, duration: .8 }, 12.6)
+    .to("#endText .e1 .w", { opacity: 1, y: 0, filter: "blur(0px)", duration: .9, stagger: .12 }, 12.9)
+    .to("#endText .e3", { opacity: 1, y: 0, duration: .8 }, 13.5)
+    .to("#byline", { autoAlpha: 1, duration: 1 }, 14.0)
+    .to({}, { duration: 2 }, 14.0);   // hold to 16 s
+
+  tl.eventCallback("onUpdate", () => $("#turb").setAttribute("seed", Math.floor(tl.time() * 24)));
+  $("#replay").onclick = () => tl.restart();
+  $("#pause").onclick = () => tl.paused(!tl.paused());
+  if (!params.has("record")) tl.play();
+}
+init();
+</script>
+</body>
+</html>
