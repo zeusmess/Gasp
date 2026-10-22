@@ -4,17 +4,17 @@
 // Audio, mixed in automatically when the files exist (.wav or .mp3):
 //   audio/sfx      — sound effects, synced to the timeline (generate with: python3 sfx.py)
 //   audio/music    — music bed (sfx.py also writes one); ducked when a voice-over is present
-//   audio/vo1 … vo6 — one voice-over line per scene, placed at VO_STARTS
-//   audio/call, call2 — the barista calling "نادية!" / "نادية؟", placed at every CALLS moment
+//   audio/vo1 … vo8 — narration lines, placed at VO_STARTS (script: VOICE_SCRIPT.md)
+//   audio/call, call2, call3 — the barista calling "نادية!" / "نادية؟" / happy "نادية!"
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdtempSync, renameSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-const VO_STARTS = [1.05, 14.2, 19.0, 27.3, 36.8, 40.6]; // seconds, one per scene
+const VO_STARTS = [0.8, 3.8, 14.2, 18.7, 27.3, 36.8, 40.6, 42.6]; // seconds — see VOICE_SCRIPT.md
 const CALLS = [[2.9, 1, "call"], [5.8, 0.9, "call"], [7.55, 0.8, "call"], [8.75, 0.8, "call"], [11.9, 1, "call"],
-  [13.3, 0.7, "call2"], [36.0, 1.1, "call"]]; // [time, volume, file]
+  [13.3, 0.7, "call2"], [36.0, 1.1, "call3"]]; // [time, volume, file]
 
 const here = dirname(fileURLToPath(import.meta.url));
 const audioOnly = process.argv[2] === "--audio-only";
