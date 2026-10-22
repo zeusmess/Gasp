@@ -12,7 +12,7 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-const VO_STARTS = [1.4, 14.2, 19.0, 27.3, 36.8, 40.6]; // seconds, one per scene
+const VO_STARTS = [1.05, 14.2, 19.0, 27.3, 36.8, 40.6]; // seconds, one per scene
 const CALLS = [[2.9, 1, "call"], [5.8, 0.9, "call"], [7.55, 0.8, "call"], [8.75, 0.8, "call"], [11.9, 1, "call"],
   [13.3, 0.7, "call2"], [36.0, 1.1, "call"]]; // [time, volume, file]
 
@@ -25,14 +25,14 @@ const findAudio = name => ["wav", "mp3"].map(ext => join(here, "audio", `${name}
 
 // builds the ffmpeg audio inputs + filter for a video input at index 0
 function audioArgs(duration) {
-  const args = [], filters = [], mix = [];
+  const args = [], filters = [], voice = [], bed = [];
   let input = 1;
   const voices = VO_STARTS.map((start, i) => [findAudio(`vo${i + 1}`), start]).filter(([f]) => f);
   voices.forEach(([file, start], i) => {
     const ms = Math.round(start * 1000);
     args.push("-i", file);
     filters.push(`[${input++}:a]adelay=${ms}|${ms}[v${i}]`);
-    mix.push(`[v${i}]`);
+    voice.push(`[v${i}]`);
   });
   CALLS.forEach(([start, vol, name], i) => {
     const callFile = findAudio(name) || findAudio("call");
@@ -40,22 +40,30 @@ function audioArgs(duration) {
     const ms = Math.round(start * 1000);
     args.push("-i", callFile);
     filters.push(`[${input++}:a]adelay=${ms}|${ms},volume=${vol}[c${i}]`);
-    mix.push(`[c${i}]`);
+    voice.push(`[c${i}]`);
   });
   const sfx = findAudio("sfx");
   if (sfx) {
     args.push("-i", sfx);
     filters.push(`[${input++}:a]volume=${voices.length ? 0.6 : 0.9}[s]`);
-    mix.push("[s]");
+    bed.push("[s]");
   }
   const music = findAudio("music");
   if (music) {
     args.push("-i", music);
     filters.push(`[${input++}:a]atrim=0:${duration},afade=t=in:d=0.5,afade=t=out:st=${duration - 2}:d=2,volume=${voices.length ? 0.3 : 0.6}[m]`);
-    mix.push("[m]");
+    bed.push("[m]");
   }
-  if (!mix.length) return [];
-  filters.push(`${mix.join("")}amix=inputs=${mix.length}:normalize=0,alimiter=limit=0.95,apad,atrim=0:${duration}[aout]`);
+  if (!voice.length && !bed.length) return [];
+  const sum = (labels, out) => filters.push(`${labels.join("")}amix=inputs=${labels.length}:normalize=0${out}`);
+  if (voice.length && bed.length) {
+    // duck the music + effects whenever someone speaks
+    sum(voice, ",asplit=2[vout][vkey]");
+    sum(bed, "[bed]");
+    filters.push("[bed][vkey]sidechaincompress=threshold=0.1:ratio=2:attack=20:release=400[ducked]");
+    sum(["[ducked]", "[vout]"], "[mixed]");
+  } else sum([...voice, ...bed], "[mixed]");
+  filters.push(`[mixed]alimiter=limit=0.95,apad,atrim=0:${duration}[aout]`);
   return [...args, "-filter_complex", filters.join(";"), "-map", "0:v", "-map", "[aout]", "-c:a", "aac", "-b:a", "192k"];
 }
 
