@@ -15,6 +15,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const VO_STARTS = [0.8, 3.8, 14.2, 18.7, 27.3, 36.8, 40.6, 42.6]; // seconds — see VOICE_SCRIPT.md
 const CALLS = [[2.9, 1, "call"], [5.8, 0.9, "call"], [7.55, 0.8, "call"], [8.75, 0.8, "call"], [11.9, 1, "call"],
   [13.3, 0.7, "call2"], [36.0, 1.1, "call3"]]; // [time, volume, file]
+// A full ElevenLabs take (see ELEVENLABS.md) replaces the separate vo/call files:
+//   audio/voice = the whole script in one file, or audio/part1 … part4 = the four-part version
+const VOICE_TRACKS = [["voice", 0.8], ["part1", 0.8], ["part2", 14.2], ["part3", 27.3], ["part4", 36.0]];
 
 const here = dirname(fileURLToPath(import.meta.url));
 const audioOnly = process.argv[2] === "--audio-only";
@@ -27,14 +30,15 @@ const findAudio = name => ["wav", "mp3"].map(ext => join(here, "audio", `${name}
 function audioArgs(duration) {
   const args = [], filters = [], voice = [], bed = [];
   let input = 1;
-  const voices = VO_STARTS.map((start, i) => [findAudio(`vo${i + 1}`), start]).filter(([f]) => f);
+  const tracks = VOICE_TRACKS.map(([name, start]) => [findAudio(name), start]).filter(([f]) => f);
+  const voices = tracks.length ? tracks : VO_STARTS.map((start, i) => [findAudio(`vo${i + 1}`), start]).filter(([f]) => f);
   voices.forEach(([file, start], i) => {
     const ms = Math.round(start * 1000);
     args.push("-i", file);
     filters.push(`[${input++}:a]adelay=${ms}|${ms}[v${i}]`);
     voice.push(`[v${i}]`);
   });
-  CALLS.forEach(([start, vol, name], i) => {
+  if (!tracks.length) CALLS.forEach(([start, vol, name], i) => {
     const callFile = findAudio(name) || findAudio("call");
     if (!callFile) return;
     const ms = Math.round(start * 1000);
