@@ -18,8 +18,9 @@ const VO_STARTS = [0.8, 3.8, 14.2, 18.7, 27.3, 36.8, 40.6, 42.6]; // seconds —
 const CALLS = [[2.9, 1, "call1", "call"], [5.8, 1, "call2", "call"], [7.55, 0.9, "call3", "call"], [8.75, 0.9, "call4", "call"],
   [11.9, 1, "call5", "call"], [13.3, 0.8, "call6", "call"], [36.0, 1.1, "call7", "call"]];
 // A full ElevenLabs take (see ELEVENLABS.md) replaces the separate vo/call files:
-//   audio/voice = the whole script in one file, or audio/part1 … part4 = the four-part version
-const VOICE_TRACKS = [["voice", 0.8], ["part1", 0.8], ["part2", 14.2], ["part3", 27.3], ["part4", 36.0]];
+//   audio/voice-aligned = a take already cut to the timeline (align_voice.py), audio/voice = the whole
+//   script in one file, or audio/part1 … part4 = the four-part version
+const VOICE_TRACKS = [["voice-aligned", 0], ["voice", 0.8], ["part1", 0.8], ["part2", 14.2], ["part3", 27.3], ["part4", 36.0]];
 
 const here = dirname(fileURLToPath(import.meta.url));
 const audioOnly = process.argv[2] === "--audio-only";
