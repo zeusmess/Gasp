@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>الاسم اللي بيتنادى — Carousel</title>
+<style>
+  @font-face { font-family: "Cairo"; src: url("../fonts/Cairo.ttf") format("truetype"); font-weight: 200 1000; }
+  @font-face { font-family: "Ruqaa"; src: url("../fonts/ArefRuqaa-Bold.ttf") format("truetype"); font-weight: 700; }
+  :root {
+    --pink: #ff6fa3; --pink-deep: #e2457f; --pink-soft: #ffc2d8;
+    --cream: #f7ede3; --muted: rgba(247,237,227,.62); --line: rgba(247,237,227,.14);
+    --green: #1e3932; --ink: #16110e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #000; }
+  body { font-family: "Cairo", sans-serif; color: var(--cream); width: 10800px; height: 1350px; position: relative; overflow: hidden; }
+
+  .slide { position: absolute; top: 0; width: 1080px; height: 1350px; overflow: hidden; direction: rtl;
+    background: radial-gradient(ellipse 85% 60% at 50% 35%, #4a2c1c 0%, #24140c 55%, #0b0604 100%); }
+  .slide::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse 80% 70% at 50% 45%, transparent 50%, rgba(0,0,0,.55) 100%); }
+  .bokeh { position: absolute; border-radius: 50%; mix-blend-mode: screen; pointer-events: none; }
+
+  /* shared typography */
+  .kicker { position: absolute; top: 84px; right: 90px; display: flex; gap: 18px; align-items: center;
+    font-size: 26px; font-weight: 700; letter-spacing: 1px; color: var(--muted); }
+  .kicker b { color: var(--pink); font-weight: 800; }
+  .kicker i { width: 46px; height: 2px; background: var(--pink); display: block; }
+  .page { position: absolute; top: 84px; left: 90px; font-size: 24px; font-weight: 700; color: var(--muted); direction: ltr; letter-spacing: 2px; }
+  .page b { color: var(--cream); }
+  .h { position: absolute; right: 90px; left: 90px; font-weight: 900; line-height: 1.12; letter-spacing: -1px; }
+  .s { position: absolute; right: 90px; left: 90px; font-weight: 600; line-height: 1.45; color: var(--muted); }
+  .pink { color: var(--pink); }
+  .src { position: absolute; right: 90px; bottom: 70px; font-size: 20px; color: rgba(247,237,227,.4); direction: rtl; }
+  .chip { display: inline-flex; align-items: center; gap: 12px; padding: 12px 26px; border-radius: 999px;
+    background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14); font-size: 26px; font-weight: 700; white-space: nowrap; }
+  .chip .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--pink); }
+  .glass { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 36px; backdrop-filter: blur(18px); }
+  .cup { position: absolute; }
+  .hand { font-family: "Ruqaa"; font-weight: 700; }
+
+  /* the continuous thread */
+  #thread { position: absolute; left: 0; top: 0; width: 10800px; height: 1350px; pointer-events: none; z-index: 5; }
+  .grain { position: absolute; inset: 0; width: 10800px; height: 1350px; opacity: .08; mix-blend-mode: overlay; pointer-events: none; z-index: 6; }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="gBody" x1="0" x2="1">
+      <stop offset="0" stop-color="#bdb2a6"/><stop offset=".18" stop-color="#ece6de"/>
+      <stop offset=".42" stop-color="#ffffff"/><stop offset=".72" stop-color="#ebe4dc"/><stop offset="1" stop-color="#a99d91"/>
+    </linearGradient>
+    <linearGradient id="gLid" x1="0" x2="1">
+      <stop offset="0" stop-color="#cfc6bd"/><stop offset=".4" stop-color="#ffffff"/>
+      <stop offset=".75" stop-color="#e6ded5"/><stop offset="1" stop-color="#b3a89c"/>
+    </linearGradient>
+    <radialGradient id="gShadow"><stop offset="0" stop-color="#000" stop-opacity=".65"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+    <clipPath id="clipLogo"><circle r="84"/></clipPath>
+    <g id="cupArt">
+      <ellipse cx="0" cy="6" rx="260" ry="34" fill="url(#gShadow)"/>
+      <path d="M-224,-742 L224,-742 L170,0 L-170,0 Z" fill="url(#gBody)"/>
+      <path d="M-224,-742 L-208,-742 L-156,0 L-170,0 Z" fill="#000" opacity=".05"/>
+      <g transform="translate(0 -330)" clip-path="url(#clipLogo)">
+        <circle r="84" fill="#fff"/>
+        <image href="../starbucks-logo.png" x="-86" y="-86" width="172" height="173" preserveAspectRatio="xMidYMid slice"/>
+      </g>
+      <rect x="-244" y="-786" width="488" height="48" rx="18" fill="url(#gLid)"/>
+      <path d="M-232,-786 C-226,-842 226,-842 232,-786 Z" fill="url(#gLid)"/>
+      <path d="M-200,-812 C-120,-830 120,-830 200,-812" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="4"/>
+      <ellipse cx="96" cy="-826" rx="34" ry="8" fill="#5b4a40"/>
+    </g>
+    <path id="ribbonPath" d="M-115,175 L25,-35 C65,-95 55,-165 0,-165 C-55,-165 -65,-95 -25,-35 L115,175"/>
+  </defs>
+</svg>
+
+<!-- ============ 01 COVER ============ -->
+<section class="slide" style="left:0">
+  <div class="kicker"><i></i><b>أكتوبر الوردي</b> · حكاية من ستاربكس</div>
+  <div class="page"><b>01</b> / 10</div>
+  <div class="h" style="top:190px;font-size:150px">الاسم<br>اللي <span class="pink">بيتنادى</span></div>
+  <div class="s" style="top:560px;font-size:38px;width:470px;right:90px;left:auto">كل يوم بنسمع اسم… لحد ما في يوم <span style="color:var(--cream)">محدش بيرد.</span></div>
+  <div class="cup" data-cup='{"x":290,"y":1360,"s":0.98,"name":"نادية","steam":1}'></div>
+  <div class="chip" style="position:absolute;right:90px;bottom:96px">اسحبي <span style="color:var(--pink)">←</span></div>
+</section>
+
+<!-- ============ 02 ROUTINE ============ -->
+<section class="slide" style="left:1080px">
+  <div class="kicker"><i></i><b>٠٢</b> · الروتين</div>
+  <div class="page"><b>02</b> / 10</div>
+  <div class="h" style="top:190px;font-size:80px">كل يوم الساعة <span class="pink">٨:١٥</span>…</div>
+  <div class="s" style="top:310px;font-size:44px;color:var(--cream)">نفس الاسم. نفس الكوباية. نفس الابتسامة.</div>
+  <div class="cup" data-cup='{"x":855,"y":1080,"s":0.5,"name":"نادية","day":"السبت"}'></div>
+  <div class="cup" data-cup='{"x":625,"y":1080,"s":0.5,"name":"نادية","day":"الحد"}'></div>
+  <div class="cup" data-cup='{"x":395,"y":1080,"s":0.5,"name":"نادية","day":"الاتنين"}'></div>
+  <div class="cup" data-cup='{"x":165,"y":1080,"s":0.5,"name":"نادية","day":"التلات"}'></div>
+  <div class="s" style="bottom:90px;top:auto;font-size:30px">الباريستا بقت حافظة الاسم… <span class="hand pink" style="font-size:44px">«نادية!»</span></div>
+</section>
+
+<!-- ============ 03 SILENCE ============ -->
+<section class="slide" style="left:2160px;filter:saturate(.08) brightness(.8)">
+  <div class="kicker"><i></i><b>٠٣</b> · الصمت</div>
+  <div class="page"><b>03</b> / 10</div>
+  <div class="h" style="top:190px;font-size:104px">لحد ما في يوم…</div>
+  <div class="s" style="top:330px;font-size:48px;color:var(--cream)">الاسم اتنادى… <b>ومحدش ردّ.</b></div>
+  <div class="cup" data-cup='{"x":540,"y":1230,"s":0.82,"name":"نادية"}'></div>
+  <div class="hand" style="position:absolute;top:470px;left:120px;font-size:96px;color:rgba(247,237,227,.55);transform:rotate(-6deg)">نادية؟</div>
+  <div class="chip" style="position:absolute;bottom:80px;left:50%;transform:translateX(-50%)"><span class="dot"></span>الأربع · ١:٠٠ م</div>
+</section>
+
+<!-- ============ 04 ONE IN EIGHT ============ -->
+<section class="slide" style="left:3240px">
+  <div class="kicker"><i></i><b>٠٤</b> · الحقيقة</div>
+  <div class="page"><b>04</b> / 10</div>
+  <div class="h" style="top:150px;font-size:250px;line-height:1">١ من <span class="pink">٨</span></div>
+  <div class="s" style="top:430px;font-size:44px;color:var(--cream)">ستات هتواجه سرطان الثدي في حياتها.</div>
+  <div class="cup" data-cup='{"x":855,"y":860,"s":0.3,"name":"ماما"}'></div>
+  <div class="cup" data-cup='{"x":625,"y":860,"s":0.3,"name":"سلمى"}'></div>
+  <div class="cup" data-cup='{"x":395,"y":860,"s":0.3,"name":"تيتة"}'></div>
+  <div class="cup" data-cup='{"x":165,"y":860,"s":0.3,"name":"هبة"}'></div>
+  <div class="cup" data-cup='{"x":855,"y":1140,"s":0.3,"name":"منى"}'></div>
+  <div class="cup" data-cup='{"x":625,"y":1140,"s":0.3,"name":"نادية","faded":1}'></div>
+  <div class="cup" data-cup='{"x":395,"y":1140,"s":0.3,"name":"مريم"}'></div>
+  <div class="cup" data-cup='{"x":165,"y":1140,"s":0.3,"name":"أمل"}'></div>
+  <div class="s" style="top:1180px;font-size:30px;color:var(--cream)">يمكن تكون واحدة بتحبيها… <span class="pink">يمكن تكوني انتي.</span></div>
+  <div class="src">* المصدر: American Cancer Society</div>
+</section>
+
+<!-- ============ 05 EARLY DETECTION ============ -->
+<section class="slide" style="left:4320px">
+  <div class="kicker"><i></i><b>٠٥</b> · الأمل</div>
+  <div class="page"><b>05</b> / 10</div>
+  <div class="h" style="top:190px;font-size:96px">الاكتشاف المبكر<br><span class="pink">بيفرق.</span></div>
+  <svg style="position:absolute;left:290px;top:520px" width="500" height="500" viewBox="-250 -250 500 500">
+    <circle r="200" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="26"/>
+    <circle r="200" fill="none" stroke="#ff6fa3" stroke-width="26" stroke-linecap="round" stroke-dasharray="1244 1257" transform="rotate(-90)"/>
+    <text y="40" text-anchor="middle" font-family="Cairo" font-weight="900" font-size="150" fill="#f7ede3" direction="rtl">٩٩٪</text>
+  </svg>
+  <div class="s" style="top:1060px;font-size:36px;color:var(--cream);text-align:center">نسبة النجاة لـ ٥ سنين لما الورم يتكشف <span class="pink">بدري</span> وهو لسه في مكانه.</div>
+  <div class="src">* المرحلة الموضعية (Localized) — American Cancer Society</div>
+</section>
+
+<!-- ============ 06 HOW ============ -->
+<section class="slide" style="left:5400px">
+  <div class="kicker"><i></i><b>٠٦</b> · الفحص الذاتي</div>
+  <div class="page"><b>06</b> / 10</div>
+  <div class="h" style="top:180px;font-size:100px"><span class="pink">٥</span> دقايق في الشهر</div>
+  <div class="s" style="top:310px;font-size:38px">أقل من وقت كوباية قهوتك.</div>
+  <div class="glass step" style="position:absolute;right:90px;left:90px;top:430px;height:220px">
+    <div class="num">١</div><div><div class="t">شوفي</div><div class="d">قدام المراية، إيديكي جنبك وبعدين فوق راسك. دوري على أي تغيير في الشكل أو الجلد.</div></div>
+  </div>
+  <div class="glass step" style="position:absolute;right:90px;left:90px;top:680px;height:220px">
+    <div class="num">٢</div><div><div class="t">المسي</div><div class="d">بأطراف صوابعك وبحركة دائرية، من برا لجوه، ومتنسيش منطقة تحت الباط.</div></div>
+  </div>
+  <div class="glass step" style="position:absolute;right:90px;left:90px;top:930px;height:220px">
+    <div class="num">٣</div><div><div class="t">اسألي</div><div class="d">لو لاحظتي أي تغيير — احجزي كشف على طول. متستنيش.</div></div>
+  </div>
+  <div class="s" style="bottom:80px;top:auto;font-size:28px">أحسن وقت: بعد الدورة بحوالي أسبوع.</div>
+</section>
+
+<!-- ============ 07 SIGNS ============ -->
+<section class="slide" style="left:6480px">
+  <div class="kicker"><i></i><b>٠٧</b> · علامات</div>
+  <div class="page"><b>07</b> / 10</div>
+  <div class="h" style="top:190px;font-size:82px">علامات <span class="pink">تستاهل</span> كشف</div>
+  <ul class="signs" style="position:absolute;right:90px;left:90px;top:350px">
+    <li>كتلة أو تخن في الصدر أو تحت الباط</li>
+    <li>تغيّر في حجم أو شكل الصدر</li>
+    <li>تغيّر في الجلد: تجعّد، احمرار، أو شكل قشرة البرتقان</li>
+    <li>إفرازات من الحلمة أو تغيّر في شكلها</li>
+    <li>ألم في مكان واحد ومش بيروح</li>
+  </ul>
+  <div class="glass" style="position:absolute;right:90px;left:90px;bottom:90px;padding:40px 46px;font-size:38px;font-weight:800;line-height:1.4">
+    مش كل تغيير معناه سرطان…<br><span class="pink">بس كل تغيير يستاهل كشف.</span>
+  </div>
+</section>
+
+<!-- ============ 08 RETURN ============ -->
+<section class="slide" style="left:7560px">
+  <div class="kicker"><i></i><b>٠٨</b> · بعد ٦ شهور</div>
+  <div class="page"><b>08</b> / 10</div>
+  <div class="h" style="top:190px;font-size:74px">بس نادية لاحظت بدري…</div>
+  <div class="s" style="top:298px;font-size:50px;color:var(--cream);font-weight:800">فاسمها لسه <span class="pink">بيتنادى.</span></div>
+  <div class="cup" data-cup='{"x":540,"y":1300,"s":0.98,"name":"نادية","ribbon":1,"miss":1,"steam":1}'></div>
+</section>
+
+<!-- ============ 09 ACTION ============ -->
+<section class="slide" style="left:8640px">
+  <div class="kicker"><i></i><b>٠٩</b> · دورك</div>
+  <div class="page"><b>09</b> / 10</div>
+  <div class="h" style="top:190px;font-size:96px">اعملي التذكير<br><span class="pink">دلوقتي.</span></div>
+  <div class="glass notif" style="position:absolute;right:90px;left:90px;top:560px">
+    <div class="icon"><svg viewBox="-150 -190 300 380" width="64" height="64"><use href="#ribbonPath" fill="none" stroke="#fff" stroke-width="44" stroke-linejoin="round"/></svg></div>
+    <div style="flex:1"><div class="nt">تذكير <small>كل شهر · ٨:١٥ ص</small></div><div class="nb">الفحص الذاتي الشهري — ٥ دقايق بس</div></div>
+  </div>
+  <div class="actions">
+    <div><span class="ic">♡</span>احفظي البوست</div>
+    <div><span class="ic">@</span>منشن لـ ٣ ستات بتحبيهم</div>
+    <div><span class="ic">↗</span>ابعتيه لمامتك</div>
+  </div>
+</section>
+
+<!-- ============ 10 END ============ -->
+<section class="slide" style="left:9720px;background:radial-gradient(ellipse 80% 60% at 50% 40%, #2a5146 0%, #1e3932 55%, #10201b 100%)">
+  <div class="page"><b>10</b> / 10</div>
+  <svg style="position:absolute;left:290px;top:170px" width="500" height="500" viewBox="-250 -250 500 500">
+    <defs><clipPath id="clipBig"><circle r="186"/></clipPath>
+      <radialGradient id="gGlow"><stop offset="0" stop-color="#ff6fa3" stop-opacity=".45"/><stop offset="1" stop-color="#ff6fa3" stop-opacity="0"/></radialGradient></defs>
+    <circle r="250" fill="url(#gGlow)"/>
+    <circle r="218" fill="none" stroke="#ff6fa3" stroke-width="9"/>
+    <circle r="236" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="2"/>
+    <g clip-path="url(#clipBig)"><circle r="186" fill="#fff"/>
+      <image href="../starbucks-logo.png" x="-189" y="-189" width="378" height="380" preserveAspectRatio="xMidYMid slice"/></g>
+    <g transform="translate(158 158)"><circle r="52" fill="#ff6fa3" stroke="#1e3932" stroke-width="7"/>
+      <use href="#ribbonPath" fill="none" stroke="#fff" stroke-width="44" stroke-linejoin="round" transform="translate(0 2) scale(.18)"/></g>
+  </svg>
+  <div class="h" style="top:740px;font-size:68px;text-align:center;right:40px;left:40px">خلّي اسمك يفضل يتنادى.</div>
+  <div class="h pink" style="top:840px;font-size:74px;text-align:center">افحصي بدري.</div>
+  <div class="s" style="top:985px;font-size:32px;text-align:center">#اسمك_يتنادى · أكتوبر الوردي</div>
+  <div style="position:absolute;bottom:150px;left:0;right:0;text-align:center;direction:ltr;font-size:26px;font-weight:600;letter-spacing:8px;color:rgba(255,255,255,.7)">— BY YOUSSEF AYMAN —</div>
+</section>
+
+<!-- the thread that runs through every slide -->
+<svg id="thread" viewBox="0 0 10800 1350"></svg>
+<svg class="grain" viewBox="0 0 10800 1350"><filter id="fN"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#fN)"/></svg>
+
+<style>
+  .step { display: flex; align-items: center; gap: 36px; padding: 0 44px; }
+  .step .num { flex: none; width: 104px; height: 104px; border-radius: 50%; display: grid; place-items: center;
+    background: linear-gradient(145deg, #ff8ab5, #e2457f); font-size: 54px; font-weight: 900; color: #fff; }
+  .step .t { font-size: 46px; font-weight: 900; margin-bottom: 6px; }
+  .step .d { font-size: 30px; font-weight: 500; line-height: 1.45; color: var(--muted); }
+  .signs { list-style: none; }
+  .signs li { position: relative; padding: 20px 64px 20px 0; font-size: 37px; font-weight: 700; border-bottom: 1px solid var(--line); }
+  .signs li::before { content: ""; position: absolute; right: 8px; top: 36px; width: 18px; height: 18px; border-radius: 50%;
+    background: var(--pink); box-shadow: 0 0 0 8px rgba(255,111,163,.18); }
+  .notif { display: flex; gap: 30px; align-items: center; padding: 38px 40px; border-radius: 48px; background: rgba(38,32,30,.7); }
+  .notif .icon { flex: none; width: 112px; height: 112px; border-radius: 28px; display: grid; place-items: center; background: linear-gradient(145deg, #ff8ab5, #e2457f); }
+  .notif .nt { font-size: 38px; font-weight: 900; display: flex; justify-content: space-between; }
+  .notif .nt small { font-size: 26px; font-weight: 600; color: var(--muted); }
+  .notif .nb { font-size: 36px; font-weight: 500; margin-top: 6px; }
+  .actions { position: absolute; right: 90px; left: 90px; top: 860px; display: grid; gap: 22px; }
+  .actions div { display: flex; align-items: center; gap: 26px; font-size: 40px; font-weight: 800; padding: 26px 34px; border-radius: 28px; border: 1px solid var(--line); }
+  .actions .ic { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,111,163,.16); color: var(--pink); font-size: 32px; font-weight: 900; }
+</style>
+
+<script>
+const NS = "http://www.w3.org/2000/svg";
+let seed = 7; const rand = (a, b) => { seed = (seed * 16807) % 2147483647; return a + (b - a) * seed / 2147483647; };
+
+// warm bokeh on every slide except the end card
+document.querySelectorAll(".slide").forEach((s, i) => {
+  if (i === 9) return;
+  const warm = ["255,190,120", "255,160,90", "255,220,170", "255,140,120"];
+  for (let k = 0; k < 9; k++) {
+    const d = rand(70, 220), b = document.createElement("div"), c = warm[k % 4];
+    b.className = "bokeh";
+    Object.assign(b.style, { width: d + "px", height: d + "px", left: rand(-40, 1000) + "px", top: rand(40, 1150) + "px",
+      background: `radial-gradient(circle, rgba(${c},${rand(.18, .4).toFixed(2)}) 0%, rgba(${c},.08) 55%, rgba(${c},0) 70%)` });
+    s.prepend(b);
+  }
+});
+
+// cups
+document.querySelectorAll(".cup").forEach(el => {
+  const o = JSON.parse(el.dataset.cup);
+  const W = 560 * o.s, H = 920 * o.s;
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("viewBox", "-280 -880 560 920"); svg.setAttribute("width", W); svg.setAttribute("height", H);
+  let inner = `<use href="#cupArt"/>`;
+  if (o.steam) inner += `<g transform="translate(96 -850)" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="14" stroke-linecap="round" style="filter:blur(6px)">
+      <path d="M0,0 C-26,-50 26,-100 0,-150 C-26,-200 26,-250 0,-300"/><path d="M-36,-10 C-60,-60 -10,-110 -36,-160"/></g>`;
+  inner += `<text x="0" y="-490" text-anchor="middle" font-family="Ruqaa" font-weight="700" font-size="150" fill="#171210">${o.name}</text>`;
+  if (o.ribbon) inner += `<use href="#ribbonPath" fill="none" stroke="#ff6fa3" stroke-width="40" stroke-linejoin="round" transform="translate(-178 -540) scale(.25)"/>`;
+  if (o.miss) inner += `<text x="0" y="-128" text-anchor="middle" font-family="Ruqaa" font-weight="700" font-size="96" fill="#d9467c">وحشتينا</text>
+      <path d="M0,22 C-8,14 -34,2 -34,-14 C-34,-26 -24,-33 -14,-33 C-6,-33 -1,-28 0,-23 C1,-28 6,-33 14,-33 C24,-33 34,-26 34,-14 C34,2 8,14 0,22" fill="#ff6fa3" transform="translate(0 -52) scale(.9)"/>`;
+  svg.innerHTML = inner;
+  el.appendChild(svg);
+  Object.assign(el.style, { left: (o.x - W / 2) + "px", top: (o.y - H + 40 * o.s) + "px", width: W + "px", height: H + "px" });
+  if (o.faded) el.style.opacity = .22;
+  if (o.day) {
+    const d = document.createElement("div");
+    d.className = "chip"; d.textContent = o.day;
+    Object.assign(d.style, { position: "absolute", top: (H + 18) + "px", left: "50%", transform: "translateX(-50%)", fontSize: "22px", padding: "8px 20px" });
+    el.appendChild(d);
+  }
+});
+
+// the pink thread: one path across all ten slides, fading to grey through the silence
+const t = document.getElementById("thread");
+t.innerHTML = `<defs><linearGradient id="gThread" gradientUnits="userSpaceOnUse" x1="0" x2="10800">
+    <stop offset="0" stop-color="#ff6fa3"/><stop offset=".19" stop-color="#ff6fa3"/>
+    <stop offset=".24" stop-color="#8c8580"/><stop offset=".38" stop-color="#8c8580"/>
+    <stop offset=".44" stop-color="#ff6fa3"/><stop offset="1" stop-color="#ff6fa3"/></linearGradient>
+    <filter id="fGlowT" x="-5%" y="-50%" width="110%" height="200%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
+const pts = [[0, 1290], [540, 1255], [1080, 1300], [1620, 1262], [2160, 1305], [2700, 1290], [3240, 1310], [3780, 1268],
+  [4320, 1300], [4860, 1250], [5400, 1305], [5940, 1262], [6480, 1300], [7020, 1262], [7560, 1300], [8100, 1258],
+  [8640, 1300], [9180, 1262], [9720, 1300], [10260, 1255], [10800, 1285]];
+let d = `M${pts[0][0]},${pts[0][1]}`;
+for (let i = 1; i < pts.length; i++) {
+  const [x0, y0] = pts[i - 1], [x1, y1] = pts[i], mx = (x0 + x1) / 2;
+  d += ` C${mx},${y0} ${mx},${y1} ${x1},${y1}`;
+}
+const p = document.createElementNS(NS, "path");
+Object.entries({ d, fill: "none", stroke: "url(#gThread)", "stroke-width": 5, "stroke-linecap": "round", filter: "url(#fGlowT)" })
+  .forEach(([k, v]) => p.setAttribute(k, v));
+t.appendChild(p);
+// a small knot where each slide meets the next, so the swipe feels continuous
+for (let i = 1; i < 10; i++) {
+  const y = pts[i * 2][1], c = document.createElementNS(NS, "circle");
+  Object.entries({ cx: i * 1080, cy: y, r: 9, fill: (i === 3 || i === 4) ? "#8c8580" : "#ff6fa3" }).forEach(([k, v]) => c.setAttribute(k, v));
+  t.appendChild(c);
+}
+document.fonts.ready.then(() => document.body.dataset.ready = "1");
+</script>
+</body>
+</html>
