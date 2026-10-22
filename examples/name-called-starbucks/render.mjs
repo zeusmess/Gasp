@@ -5,7 +5,7 @@
 //   audio/sfx      — sound effects, synced to the timeline (generate with: python3 sfx.py)
 //   audio/music    — music bed (sfx.py also writes one); ducked when a voice-over is present
 //   audio/vo1 … vo8 — narration lines, placed at VO_STARTS (script: VOICE_SCRIPT.md)
-//   audio/call, call2, call3 — the barista calling "نادية!" / "نادية؟" / happy "نادية!"
+//   audio/call1 … call7 — the barista calling "نادية" seven different ways (ELEVENLABS.md)
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdtempSync, renameSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -13,8 +13,10 @@ import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const VO_STARTS = [0.8, 3.8, 14.2, 18.7, 27.3, 36.8, 40.6, 42.6]; // seconds — see VOICE_SCRIPT.md
-const CALLS = [[2.9, 1, "call"], [5.8, 0.9, "call"], [7.55, 0.8, "call"], [8.75, 0.8, "call"], [11.9, 1, "call"],
-  [13.3, 0.7, "call2"], [36.0, 1.1, "call3"]]; // [time, volume, file]
+// [time, volume, file, fallback] — call1…call7 are seven different deliveries (ELEVENLABS.md);
+// a missing one falls back to audio/call (one shared take)
+const CALLS = [[2.9, 1, "call1", "call"], [5.8, 1, "call2", "call"], [7.55, 0.9, "call3", "call"], [8.75, 0.9, "call4", "call"],
+  [11.9, 1, "call5", "call"], [13.3, 0.8, "call6", "call"], [36.0, 1.1, "call7", "call"]];
 // A full ElevenLabs take (see ELEVENLABS.md) replaces the separate vo/call files:
 //   audio/voice = the whole script in one file, or audio/part1 … part4 = the four-part version
 const VOICE_TRACKS = [["voice", 0.8], ["part1", 0.8], ["part2", 14.2], ["part3", 27.3], ["part4", 36.0]];
@@ -38,8 +40,8 @@ function audioArgs(duration) {
     filters.push(`[${input++}:a]adelay=${ms}|${ms}[v${i}]`);
     voice.push(`[v${i}]`);
   });
-  if (!tracks.length) CALLS.forEach(([start, vol, name], i) => {
-    const callFile = findAudio(name) || findAudio("call");
+  if (!tracks.length) CALLS.forEach(([start, vol, name, fallback], i) => {
+    const callFile = findAudio(name) || findAudio(fallback);
     if (!callFile) return;
     const ms = Math.round(start * 1000);
     args.push("-i", callFile);
