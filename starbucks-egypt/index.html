@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>محاكي شركاء ستاربكس مصر</title>
+  <meta name="description" content="لعبة محاكاة غير رسمية لتجربة العمل في ستاربكس مصر: من الباريستا حتى المدير العام.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app"></div>
+  <div id="modal-root"></div>
+  <div id="toasts" aria-live="polite"></div>
+
+  <!-- GSAP من نفس المستودع (fallback: CDN) -->
+  <script src="../dist/gsap.min.js"></script>
+  <script>window.gsap || document.write('<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"><\/script>');</script>
+
+  <script src="js/core/util.js"></script>
+  <script src="js/data/menu.js"></script>
+  <script src="js/data/world.js"></script>
+  <script src="js/data/ops.js"></script>
+  <script src="js/core/state.js"></script>
+  <script src="js/core/sim.js"></script>
+  <script src="js/core/systems.js"></script>
+
+  <script src="js/ui/app.js"></script>
+  <script src="js/ui/dashboard.js"></script>
+  <script src="js/ui/floor.js"></script>
+  <script src="js/ui/bar.js"></script>
+  <script src="js/ui/pos.js"></script>
+  <script src="js/ui/cash.js"></script>
+  <script src="js/ui/inventory.js"></script>
+  <script src="js/ui/team.js"></script>
+  <script src="js/ui/customers.js"></script>
+  <script src="js/ui/reports.js"></script>
+  <script src="js/ui/marketing.js"></script>
+  <script src="js/ui/branches.js"></script>
+  <script src="js/ui/career.js"></script>
+  <script src="js/ui/ops.js"></script>
+  <script src="js/ui/inbox.js"></script>
+  <script>SB.UI.boot();</script>
+</body>
+</html>
