@@ -180,7 +180,7 @@ SB.UI = (function () {
     tb.innerHTML = html;
     var mb = U.$('#menuBtn'); if (mb) mb.onclick = function () { U.$('#side').classList.toggle('open'); };
     U.$('#themeBtn').onclick = function () {
-      var cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      var th0 = document.documentElement.getAttribute('data-theme') || (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); var cur = th0 === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', cur);
       try { localStorage.setItem('sbTheme', cur); } catch (e) { /* ignore */ }
       UI.go(UI.current);
