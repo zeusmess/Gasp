@@ -11,3 +11,4 @@
 - Gallery: the orbit sits behind her during the hugs, then swings forward (depth 2.2, scale 1.2) for "together".
 - Music: pads high-passed at 160 Hz (they were muddy); section dynamics curve added; LRA 5.6 LU before loudnorm.
 - Final render started as 3 parallel chunks.
+- Final: 3×528 frames (~25 min each, in parallel); build.sh muxed with two-pass loudnorm; share copy at CRF 21; delivered v1.
