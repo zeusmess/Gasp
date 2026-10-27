@@ -1,0 +1,15 @@
+{
+  "assets": [
+    { "path": "assets/images/*.jpg", "source": "user-supplied event photos (Pink October event)", "license": "user-owned", "use": "final", "committed": false },
+    { "path": "assets/footage/{talk,banner,cake}.mp4", "source": "user-supplied event videos (VID-20261027-WA0064..66)", "license": "user-owned", "use": "final", "committed": false },
+    { "path": "assets/logo/starbucks_logo.png", "source": "user-supplied Starbucks logo", "license": "Starbucks trademark, used for the user's Starbucks event", "use": "final", "committed": false },
+    { "path": "src/siren.json", "source": "vectorised from the logo by scripts/extract_siren.py", "license": "derived from the logo", "use": "final", "committed": false },
+    { "path": "assets/fonts/Montserrat-*.woff2", "source": "https://fonts.google.com/specimen/Montserrat", "license": "SIL OFL 1.1", "use": "final" },
+    { "path": "assets/fonts/PlayfairDisplay-*.woff2", "source": "https://fonts.google.com/specimen/Playfair+Display", "license": "SIL OFL 1.1", "use": "final" },
+    { "path": "assets/fonts/GreatVibes-*.woff2", "source": "https://fonts.google.com/specimen/Great+Vibes", "license": "SIL OFL 1.1", "use": "final" },
+    { "path": "assets/fonts/Cairo-*.woff2", "source": "https://fonts.google.com/specimen/Cairo", "license": "SIL OFL 1.1", "use": "final" },
+    { "path": "assets/music/soundtrack.wav", "source": "synthesised in code by scripts/music.py (no samples)", "license": "original", "use": "final", "committed": false },
+    { "path": "node_modules/three", "source": "npm three@0.170.0", "license": "MIT", "use": "runtime" },
+    { "path": "../dist/gsap.min.js, SplitText, CustomEase", "source": "this repository (GSAP 3.15)", "license": "GSAP standard no-charge license", "use": "runtime" }
+  ]
+}

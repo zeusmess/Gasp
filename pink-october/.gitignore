@@ -1,0 +1,11 @@
+node_modules/
+cache/
+renders/
+# user-supplied event media and the brand logo stay out of this public repo
+assets/images/
+assets/footage/
+assets/logo/
+assets/music/
+src/siren.json
+.env
+*.env

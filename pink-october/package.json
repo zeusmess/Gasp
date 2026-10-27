@@ -1,0 +1,16 @@
+{
+  "name": "pink-october",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Starbucks × Pink October motion piece — Three.js + GSAP, rendered frame-by-frame with Playwright.",
+  "scripts": {
+    "siren": "python3 scripts/extract_siren.py",
+    "preview": "node scripts/render.mjs --from 0 --to 52.8 --fps 1 --scale 0.25 --cols 8 --sheet renders/previews/sheet_all.jpg",
+    "music": "python3 scripts/music.py assets/music/soundtrack_raw.wav",
+    "build": "bash scripts/build.sh"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "three": "^0.170.0"
+  }
+}
