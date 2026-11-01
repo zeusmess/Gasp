@@ -91,3 +91,12 @@ Ask in the friendly <a href="https://gsap.com/community/">GSAP forums</a>. Or sh
 GreenSock's standard "no charge" license can be viewed at <a href="https://gsap.com/standard-license">https://gsap.com/standard-license</a>.
 
 Copyright (c) 2008-2026, GreenSock. All rights reserved.
+## HyperFrames (vendored)
+
+[HyperFrames](https://github.com/heygen-com/hyperframes) (Apache-2.0) is included as a git submodule at `vendor/hyperframes`. Fetch it with:
+
+```bash
+git submodule update --init vendor/hyperframes
+```
+
+Its agent skills (`hyperframes`, `hyperframes-cli`, `hyperframes-registry`, `media-use`, `figma`, `slideshow`, `remotion-to-hyperframes`, `reverse-any-video`) are copied into `.claude/skills/` so Claude Code loads them automatically in this repo. To refresh them, copy `vendor/hyperframes/skills/*` over `.claude/skills/`.
