@@ -1,0 +1,96 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Cairo";
+      font-weight: 200 1000;
+      src: url("assets/fonts/cairo-arabic.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: "Unbounded";
+      font-weight: 800;
+      src: url("assets/fonts/unbounded-800.woff2") format("woff2");
+    }
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: radial-gradient(120% 90% at 50% 30%, #e6e3de 0%, #cfccc7 75%, #c2bfba 100%);
+    }
+    #end-rot {
+      position: absolute;
+      left: -50%;
+      top: -50%;
+      width: 200%;
+      height: 200%;
+      transform: rotate(-32deg);
+    }
+    #end-blinds {
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        90deg,
+        rgba(255, 252, 245, 0) 0 40px,
+        rgba(255, 252, 245, 0.55) 75px 115px,
+        rgba(255, 252, 245, 0) 150px 190px
+      );
+    }
+    #end-sweep {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 220px;
+      height: 1080px;
+      background: rgba(255, 252, 245, 0.95);
+    }
+    #end-mark {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 330px;
+      text-align: center;
+      font-family: "Unbounded", sans-serif;
+      font-weight: 800;
+      font-size: 190px;
+      line-height: 260px;
+      letter-spacing: -0.02em;
+      color: #111;
+    }
+    #end-rule {
+      position: absolute;
+      left: 760px;
+      top: 620px;
+      width: 400px;
+      height: 8px;
+      background: #e8a33d;
+    }
+    #end-skills {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 660px;
+      text-align: center;
+      direction: rtl;
+      font-family: "Cairo", sans-serif;
+      font-weight: 700;
+      font-size: 56px;
+      line-height: 1.5;
+      color: #222;
+    }
+  </style>
+  <div id="root" data-composition-id="end" data-width="1920" data-height="1080" data-layout-allow-overflow>
+    <div id="end-rot" data-layout-ignore><div id="end-blinds"></div></div>
+    <div id="end-mark">ZEUSMESS</div>
+    <div id="end-sweep" data-layout-allow-occlusion></div>
+    <div id="end-rule"></div>
+    <div id="end-skills">تصوير · مونتاج · AI</div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#end-blinds", { x: 0 }, { x: 150, duration: 4.9, ease: "none" }, 0);
+    tl.fromTo("#end-sweep", { x: -300 }, { x: 2100, duration: 1.0, ease: "power2.inOut" }, 0.1);
+    tl.fromTo("#end-mark", { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.0, ease: "power2.inOut" }, 0.1);
+    tl.fromTo("#end-rule", { scaleX: 0, transformOrigin: "50% 50%" }, { scaleX: 1, duration: 0.5, ease: "power3.out" }, 1.05);
+    tl.fromTo("#end-skills", { clipPath: "inset(0% 0% 100% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.5, ease: "power3.out" }, 1.35);
+    window.__timelines["end"] = tl;
+  </script>
+</template>

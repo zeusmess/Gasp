@@ -1,0 +1,92 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Unbounded";
+      font-weight: 800;
+      src: url("assets/fonts/unbounded-800.woff2") format("woff2");
+    }
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #cfccc7;
+    }
+    #name-photo {
+      position: absolute;
+      right: 140px;
+      top: 0;
+      width: 870px;
+      height: 1080px;
+      overflow: hidden;
+    }
+    #name-portrait {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 30%;
+    }
+    #name-sweep {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 160px;
+      height: 1080px;
+      background: rgba(255, 252, 245, 0.9);
+    }
+    .name-line {
+      position: absolute;
+      left: 140px;
+      height: 250px;
+      overflow: hidden;
+      display: flex;
+    }
+    #name-l1 {
+      top: 290px;
+    }
+    #name-l2 {
+      top: 520px;
+    }
+    .name-word {
+      display: flex;
+      font-family: "Unbounded", sans-serif;
+      font-weight: 800;
+      font-size: 190px;
+      line-height: 250px;
+      letter-spacing: -0.02em;
+      color: #111;
+    }
+    #name-l2 {
+      background: #111;
+      padding: 0 28px;
+      left: 112px;
+    }
+    #name-l2 .name-word {
+      color: #e9e6e0;
+    }
+    .name-ch {
+      display: inline-block;
+    }
+  </style>
+  <div id="root" data-composition-id="name" data-width="1920" data-height="1080">
+    <div id="name-photo"><img id="name-portrait" src="assets/portrait.png" alt="" /></div>
+    <div id="name-sweep"></div>
+    <div id="name-l1" class="name-line">
+      <div class="name-word"><span class="name-ch">Z</span><span class="name-ch">E</span><span class="name-ch">U</span><span class="name-ch">S</span></div>
+    </div>
+    <div id="name-l2" class="name-line">
+      <div class="name-word"><span class="name-ch">M</span><span class="name-ch">E</span><span class="name-ch">S</span><span class="name-ch">S</span></div>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#name-portrait", { scale: 1.28, transformOrigin: "50% 38%" }, { scale: 1.12, duration: 3.6, ease: "power1.out" }, 0);
+    tl.fromTo("#name-sweep", { x: -200 }, { x: 2000, duration: 0.9, ease: "power2.inOut" }, 0.05);
+    tl.fromTo(
+      ".name-ch",
+      { yPercent: 115 },
+      { yPercent: 0, duration: 0.55, ease: "power4.out", stagger: 0.045 },
+      0.2,
+    );
+    window.__timelines["name"] = tl;
+  </script>
+</template>

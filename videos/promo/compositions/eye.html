@@ -1,0 +1,66 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Cairo";
+      font-weight: 200 1000;
+      src: url("assets/fonts/cairo-arabic.woff2") format("woff2");
+    }
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #0d0d0d;
+    }
+    #eye-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 48%;
+    }
+    .eye-blade {
+      position: absolute;
+      left: 0;
+      width: 1920px;
+      height: 540px;
+      background: #0d0d0d;
+    }
+    #eye-top {
+      top: 0;
+    }
+    #eye-bottom {
+      top: 540px;
+    }
+    #eye-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 440px;
+      text-align: center;
+      direction: rtl;
+      font-family: "Cairo", sans-serif;
+      font-weight: 900;
+      font-size: 130px;
+      line-height: 200px;
+      color: #fff;
+      opacity: 0;
+    }
+  </style>
+  <div id="root" data-composition-id="eye" data-width="1920" data-height="1080">
+    <img id="eye-img" src="assets/eye.png" alt="" />
+    <div id="eye-top" class="eye-blade"></div>
+    <div id="eye-bottom" class="eye-blade"></div>
+    <div id="eye-line">ورا الكاميرا</div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#eye-img", { scale: 1.0 }, { scale: 1.14, duration: 4.2, ease: "power1.inOut" }, 0);
+    tl.fromTo("#eye-top", { yPercent: -100 }, { yPercent: -100, duration: 0.01 }, 0);
+    tl.fromTo("#eye-bottom", { yPercent: 100 }, { yPercent: 100, duration: 0.01 }, 0);
+    tl.to("#eye-top", { yPercent: 0, duration: 0.35, ease: "power4.in" }, 2.3);
+    tl.to("#eye-bottom", { yPercent: 0, duration: 0.35, ease: "power4.in" }, 2.3);
+    tl.fromTo("#eye-line", { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power3.out" }, 2.75);
+    window.__timelines["eye"] = tl;
+  </script>
+</template>

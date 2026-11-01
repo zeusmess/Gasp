@@ -1,0 +1,65 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: radial-gradient(120% 90% at 30% 20%, #e4e1dc 0%, #cfccc7 70%, #c2bfba 100%);
+    }
+    #light-rot {
+      position: absolute;
+      left: -50%;
+      top: -50%;
+      width: 200%;
+      height: 200%;
+      transform: rotate(-32deg);
+    }
+    #light-blinds {
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        90deg,
+        rgba(255, 252, 245, 0) 0 40px,
+        rgba(255, 252, 245, 0.55) 75px 115px,
+        rgba(255, 252, 245, 0) 150px 190px
+      );
+    }
+    #light-photo {
+      position: absolute;
+      right: 140px;
+      top: 0;
+      width: 870px;
+      height: 1080px;
+      overflow: hidden;
+    }
+    #light-portrait {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 30%;
+    }
+  </style>
+  <div id="root" data-composition-id="light" data-width="1920" data-height="1080" data-layout-allow-overflow>
+    <div id="light-rot" data-layout-ignore><div id="light-blinds"></div></div>
+    <div id="light-photo">
+      <img id="light-portrait" src="assets/portrait.png" alt="" />
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#light-blinds", { x: -260 }, { x: 40, duration: 6.4, ease: "none" }, 0);
+    tl.fromTo(
+      "#light-photo",
+      { clipPath: "inset(0% 0% 0% 45%)" },
+      { clipPath: "inset(0% 0% 0% 0%)", duration: 2.6, ease: "power2.inOut" },
+      0.2,
+    );
+    tl.fromTo(
+      "#light-portrait",
+      { scale: 1, transformOrigin: "50% 38%" },
+      { scale: 1.28, duration: 2.2, ease: "power2.inOut" },
+      4.2,
+    );
+    window.__timelines["light"] = tl;
+  </script>
+</template>
