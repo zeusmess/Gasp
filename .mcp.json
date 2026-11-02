@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "omniroute": {
+      "command": "npx",
+      "args": ["-y", "omniroute@3.8.52", "--mcp"],
+      "env": {
+        "OMNIROUTE_BASE_URL": "${OMNIROUTE_BASE_URL:-http://localhost:20128}",
+        "OMNIROUTE_API_KEY": "${OMNIROUTE_API_KEY:-}"
+      }
+    }
+  }
+}
