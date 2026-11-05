@@ -14,7 +14,7 @@ day's ayah, then a dhikr/dua screen) and schedules them on Metricool.
    scheduled in Metricool (check `getScheduledPosts` for brand 7891780 on that date),
    stop: the day is done.
 3. **Build.** `cd instagram-content && npm install --silent && node build_day.js $D`.
-   Exit code 3 means the 30-day series is over: report that and stop.
+   Exit code 4 means the series has not started yet, exit code 3 means it is over: report that and stop.
    Note in the report any line saying `audio unavailable` (the Reel was rendered silent,
    usually because `everyayah.com` is not in the environment's allowed network domains).
 4. **Push.** `git add instagram-content/out/$D && git commit -m "Daily reels for $D"` and

@@ -199,7 +199,10 @@ async function buildSlot(page, plan, slot, outDir, cache) {
 async function main() {
   const date = process.argv[2], only = process.argv.includes('--only') ? process.argv[process.argv.indexOf('--only') + 1] : null;
   const plan = planFor(date);
-  if (!plan) { console.log(`No plan for ${date} (series runs ${START} to ${END}).`); process.exit(3); }
+  if (!plan) {
+    if (date < START) { console.log(`Series starts ${START}; nothing to build for ${date}.`); process.exit(4); }
+    console.log(`No plan for ${date} (series runs ${START} to ${END}).`); process.exit(3);
+  }
   const outDir = path.join(__dirname, 'out', date), cache = path.join(__dirname, 'cache');
   fs.mkdirSync(outDir, { recursive: true }); fs.mkdirSync(cache, { recursive: true });
   const browser = await chromium.launch();
