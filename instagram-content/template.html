@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: "Amiri"; src: url(fonts/Amiri-Regular.ttf); font-weight: 400; }
+  @font-face { font-family: "Amiri"; src: url(fonts/Amiri-Bold.ttf); font-weight: 700; }
+  @font-face { font-family: "Amiri Quran"; src: url(fonts/AmiriQuran-Regular.ttf); }
+  @font-face { font-family: "Aref Ruqaa"; src: url(fonts/ArefRuqaa-Bold.ttf); font-weight: 700; }
+  @font-face { font-family: "Reem Kufi"; src: url(fonts/ReemKufi-SemiBold.ttf); font-weight: 600; }
+  @font-face { font-family: "Noto Naskh Arabic"; src: url(fonts/NotoNaskhArabic-Regular.ttf); }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; background: #000; }
+
+  #card { position: relative; width: 1080px; height: 1350px; overflow: hidden;
+          background: var(--bg); color: var(--ink); }
+  .layer { position: absolute; inset: 0; }
+
+  /* themes */
+  .fajr    { --bg: linear-gradient(180deg,#0b1533 0%,#1c2a58 38%,#4a4a78 62%,#b98275 84%,#f0c48e 100%);
+             --ink:#fdf6e7; --gold:#ecc782; --muted:#d9cdb8; }
+  .dhuhr   { --bg: radial-gradient(120% 80% at 50% 35%,#fffaf0 0%,#f5ecd9 60%,#e9dcc0 100%);
+             --ink:#1d3a2e; --gold:#b38534; --muted:#5d6b5f; }
+  .asr     { --bg: radial-gradient(130% 90% at 50% 20%,#fbe9c6 0%,#efcf98 55%,#dcab6b 100%);
+             --ink:#3f2612; --gold:#8b5a1f; --muted:#6b4a2a; }
+  .maghrib { --bg: linear-gradient(180deg,#141433 0%,#2c2552 32%,#5a3363 55%,#a84f66 76%,#ec9a5c 94%,#f6bd74 100%);
+             --ink:#fff3e3; --gold:#f5cb82; --muted:#e9d3c0; }
+  .isha    { --bg: radial-gradient(120% 90% at 50% 10%,#1a2a5c 0%,#0e1838 55%,#060b1e 100%);
+             --ink:#f4ead3; --gold:#d8b46a; --muted:#b9b2a2; }
+
+  #pattern { opacity: var(--pat, .07); }
+  .dhuhr #pattern, .asr #pattern { --pat: .10; }
+
+  /* frame */
+  .frame { position: absolute; border: 2px solid var(--gold); border-radius: 6px; opacity: .75; }
+  .f1 { inset: 44px; }
+  .f2 { inset: 58px; border-width: 1px; opacity: .45; }
+  .corner { position: absolute; width: 44px; height: 44px; }
+  .corner svg { width: 100%; height: 100%; }
+
+  /* content */
+  #content { position: absolute; left: 110px; right: 110px; top: 150px; bottom: 170px;
+             display: flex; flex-direction: column; align-items: center; justify-content: center;
+             text-align: center; }
+  .after { font-family: "Reem Kufi"; font-weight: 600; font-size: 30px; color: var(--muted);
+           letter-spacing: 1px; display: flex; align-items: center; gap: 14px; }
+  .after svg { width: 26px; height: 26px; }
+  .label { font-family: "Aref Ruqaa"; font-weight: 700; font-size: 84px; color: var(--gold);
+           line-height: 1.35; margin-top: 6px; }
+  .divider { display: flex; align-items: center; gap: 16px; margin: 26px 0 40px; width: 420px; }
+  .divider i { flex: 1; height: 1.5px; background: linear-gradient(90deg,transparent,var(--gold),transparent); }
+  .divider svg { width: 30px; height: 30px; }
+  #text { font-family: "Amiri"; font-weight: 700; line-height: 1.95; color: var(--ink); text-wrap: balance; }
+  #text.quran { font-family: "Amiri Quran"; font-weight: 400; line-height: 2.1; }
+  .orn { color: var(--gold); font-family: "Amiri Quran"; }
+  .note { margin-top: 30px; font-family: "Reem Kufi"; font-weight: 600; font-size: 30px; color: var(--ink);
+          border: 1.5px solid var(--gold); border-radius: 40px; padding: 6px 30px 10px; }
+  .source { margin-top: 34px; font-family: "Noto Naskh Arabic"; font-size: 32px; color: var(--muted); }
+
+  .fajr #text, .maghrib #text, .isha #text { text-shadow: 0 2px 18px rgba(0,0,0,.35); }
+  .fajr .source, .maghrib .source { color: var(--ink); opacity: .9; text-shadow: 0 1px 10px rgba(0,0,0,.45); }
+
+  /* sky elements */
+  .star { position: absolute; border-radius: 50%; background: #fff8e6; }
+  #sun { position: absolute; left: 50%; width: 520px; height: 520px; margin-left: -260px; border-radius: 50%;
+         background: radial-gradient(circle,rgba(255,236,190,.95) 0%,rgba(255,206,140,.55) 22%,rgba(255,180,120,.18) 48%,rgba(255,170,110,0) 70%); }
+  #moon { position: absolute; top: 120px; left: 140px; width: 110px; height: 110px; }
+</style>
+</head>
+<body>
+<div id="card">
+  <svg id="pattern" class="layer" width="1080" height="1350">
+    <defs>
+      <pattern id="p8" width="135" height="135" patternUnits="userSpaceOnUse">
+        <g fill="none" stroke="var(--gold)" stroke-width="1.6" transform="translate(67.5 67.5)">
+          <rect x="-34" y="-34" width="68" height="68"/>
+          <rect x="-34" y="-34" width="68" height="68" transform="rotate(45)"/>
+          <circle r="14"/>
+          <path d="M-67.5 0H-48M48 0H67.5M0 -67.5V-48M0 48V67.5"/>
+        </g>
+      </pattern>
+      <radialGradient id="fade" cx="50%" cy="45%" r="60%">
+        <stop offset="0" stop-color="#fff" stop-opacity=".25"/>
+        <stop offset="1" stop-color="#fff" stop-opacity="1"/>
+      </radialGradient>
+      <mask id="m"><rect width="1080" height="1350" fill="url(#fade)"/></mask>
+    </defs>
+    <rect id="patrect" width="1080" height="1350" fill="url(#p8)" mask="url(#m)"/>
+  </svg>
+
+  <div id="sky" class="layer"></div>
+  <div id="sun"></div>
+  <svg id="moon" viewBox="0 0 100 100" style="display:none">
+    <defs><filter id="glow"><feGaussianBlur stdDeviation="3"/></filter></defs>
+    <path d="M62 8a44 44 0 1 0 30 70A36 36 0 1 1 62 8z" fill="var(--gold)" filter="url(#glow)" opacity=".6"/>
+    <path d="M62 8a44 44 0 1 0 30 70A36 36 0 1 1 62 8z" fill="var(--gold)"/>
+  </svg>
+
+  <div class="frame f1"></div><div class="frame f2"></div>
+  <div id="corners"></div>
+
+  <div id="content">
+    <div class="after" id="after"></div>
+    <div class="label" id="label"></div>
+    <div class="divider" id="divider"><i></i><span id="dstar"></span><i></i></div>
+    <div id="text"></div>
+    <div class="note" id="note" style="display:none"></div>
+    <div class="source" id="source"></div>
+  </div>
+</div>
+
+<script>
+const STAR8 = c => `<svg viewBox="-50 -50 100 100"><g fill="${c}">
+  <rect x="-30" y="-30" width="60" height="60"/><rect x="-30" y="-30" width="60" height="60" transform="rotate(45)"/></g>
+  <circle r="12" fill="none" stroke="var(--bg-solid,#0000)" /></svg>`;
+
+let P = null, stars = [];
+function rnd(seed){ return () => (seed = (seed * 16807) % 2147483647) / 2147483647; }
+const clamp = (x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const ease = x => 1 - Math.pow(1 - clamp(x), 3);
+const win = (t,a,b)=>ease((t-a)/(b-a));
+
+window.setup = async (post) => {
+  P = post;
+  const card = document.getElementById('card');
+  card.className = post.theme;
+  const gold = getComputedStyle(card).getPropertyValue('--gold').trim();
+
+  document.getElementById('after').innerHTML = `${STAR8(gold)}<span>بعد صلاة ${post.prayer}</span>${STAR8(gold)}`;
+  document.getElementById('label').textContent = post.label;
+  document.getElementById('dstar').innerHTML = STAR8(gold);
+  const tx = document.getElementById('text');
+  if (post.font === 'quran') { tx.className = 'quran'; const w = post.text.split(' '); const last = w.pop(), first = w.shift();
+    tx.innerHTML = `<span style="white-space:nowrap"><span class="orn">﴿</span>${first}</span> ${w.join(' ')} <span style="white-space:nowrap">${last}<span class="orn">﴾</span></span>`; }
+  else { tx.className = ''; const w = post.text.split(' '); const last = w.pop(), first = w.shift();
+    tx.innerHTML = `<span style="white-space:nowrap"><span class="orn">«</span>${first}</span> ${w.join(' ')} <span style="white-space:nowrap">${last}<span class="orn">»</span></span>`; }
+  const note = document.getElementById('note');
+  if (post.note) { note.style.display = ''; note.textContent = post.note; }
+  document.getElementById('source').textContent = post.source;
+
+  // corners
+  const cs = [[38,38],[38,null],[null,38],[null,null]];
+  document.getElementById('corners').innerHTML = cs.map(([t,l]) =>
+    `<div class="corner" style="${t!==null?'top:30px;':'bottom:30px;'}${l!==null?'left:30px;':'right:30px;'}">${STAR8(gold)}</div>`).join('');
+
+  // sky
+  const sky = document.getElementById('sky'); sky.innerHTML = ''; stars = [];
+  if (['fajr','maghrib','isha'].includes(post.theme)) {
+    const r = rnd(post.theme.length * 7919 + 13);
+    const n = post.theme === 'isha' ? 90 : 70, maxY = post.theme === 'isha' ? 1300 : 760;
+    for (let i = 0; i < n; i++) {
+      const s = document.createElement('div'); s.className = 'star';
+      const size = 1.5 + r() * 3.2, x = 70 + r()*940, y = 70 + r()*maxY;
+      if (x > 110 && x < 970 && y > 330 && y < 1020) { i--; continue; }  // keep stars off the text
+      Object.assign(s.style, { left: x+'px', top: y+'px', width: size+'px', height: size+'px' });
+      sky.appendChild(s); stars.push({ el: s, ph: r()*6.28, sp: .6 + r()*1.6, delay: r() });
+    }
+  }
+  const sun = document.getElementById('sun');
+  sun.style.display = ['fajr','maghrib'].includes(post.theme) ? '' : 'none';
+  document.getElementById('moon').style.display = ['maghrib','isha'].includes(post.theme) ? '' : 'none';
+  if (post.theme === 'isha') Object.assign(document.getElementById('moon').style, { top:'110px', left:'130px' });
+
+  await document.fonts.ready;
+  // fit text
+  let fs = 84; tx.style.fontSize = fs + 'px';
+  const content = document.getElementById('content');
+  const limitH = content.clientHeight;
+  const fullH = () => [...content.children].reduce((h,c)=>h + (c.offsetParent? c.offsetHeight:0), 0) + 140;
+  while (fs > 38 && fullH() > limitH) { fs -= 2; tx.style.fontSize = fs + 'px'; }
+};
+
+// t in seconds; T = total duration. For stills call setT(T, T).
+window.setT = (t, T) => {
+  const th = P.theme, still = t >= T;
+  const parts = ['after','label','divider','text','note','source'].map(id=>document.getElementById(id));
+  const starts = [0.4, 0.9, 1.6, 2.1, 3.6, 3.9];
+  parts.forEach((el,i) => {
+    const k = still ? 1 : win(t, starts[i], starts[i] + (i===3 ? 1.6 : 0.9));
+    el.style.opacity = k;
+    el.style.transform = `translateY(${(1-k)*24}px)`;
+    el.style.filter = i===3 && k<1 ? `blur(${(1-k)*6}px)` : '';
+  });
+  // divider grows
+  document.getElementById('divider').style.width = (still?420: 120 + 300*win(t,1.6,2.8)) + 'px';
+
+  // pattern drift
+  document.getElementById('patrect').setAttribute('transform', `translate(${(t*4)%135} ${(t*2)%135})`);
+
+  const sun = document.getElementById('sun');
+  const moon = document.getElementById('moon');
+  if (th === 'fajr') {
+    const k = still ? 1 : win(t, 0, 7);
+    sun.style.top = (1350 - 120 - 200*k) + 'px';
+    sun.style.opacity = .55 + .45*k;
+    stars.forEach(s => s.el.style.opacity = (1 - (still?1:clamp(t/8)) * .85) * (.55 + .45*Math.sin(t*s.sp*2 + s.ph)));
+  } else if (th === 'maghrib') {
+    const k = still ? 1 : win(t, 0, 7);
+    sun.style.top = (1350 - 330 + 210*k) + 'px';
+    sun.style.opacity = 1 - .35*k;
+    stars.forEach(s => { const a = still ? 1 : clamp((t - s.delay*5)/1.5);
+      s.el.style.opacity = a * (.5 + .45*Math.sin(t*s.sp*2 + s.ph)); });
+    const m = still ? 1 : win(t, 1, 4);
+    moon.style.opacity = m; moon.style.transform = `translateY(${(1-m)*30}px)`;
+  } else if (th === 'isha') {
+    stars.forEach(s => s.el.style.opacity = .45 + .45*Math.sin(t*s.sp*2 + s.ph));
+    moon.style.opacity = 1;
+  }
+};
+</script>
+</body>
+</html>
