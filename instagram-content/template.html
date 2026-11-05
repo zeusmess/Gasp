@@ -15,27 +15,37 @@
   .layer { position: absolute; inset: 0; }
 
   /* palettes */
-  .fajr    { --base:#0e1530; --b1:#e79a8a; --b2:#3b4c9b; --b3:#f3c98f; --ink:#fbf4ea; --acc:#f3c98f; --soft:rgba(251,244,234,.68); --glass:rgba(255,255,255,.07); --line:rgba(243,201,143,.55); }
-  .dhuhr   { --base:#f3eee4; --b1:#b9cdb4; --b2:#e9d8b6; --b3:#d7e3d2; --ink:#16271f; --acc:#2f6b4f; --soft:rgba(22,39,31,.62); --glass:rgba(255,255,255,.45); --line:rgba(47,107,79,.45); }
-  .asr     { --base:#f1dcc4; --b1:#e2a074; --b2:#f6e3c6; --b3:#c97a5a; --ink:#2f1a10; --acc:#9a4a26; --soft:rgba(47,26,16,.62); --glass:rgba(255,248,238,.40); --line:rgba(154,74,38,.45); }
-  .maghrib { --base:#1c1230; --b1:#ef8a64; --b2:#7b3d78; --b3:#f2b36f; --ink:#fff2e6; --acc:#f6c08a; --soft:rgba(255,242,230,.70); --glass:rgba(255,255,255,.07); --line:rgba(246,192,138,.55); }
-  .isha    { --base:#05080f; --b1:#123a3a; --b2:#1c2450; --b3:#0f4a3c; --ink:#f1ead9; --acc:#d6b46c; --soft:rgba(241,234,217,.62); --glass:rgba(255,255,255,.05); --line:rgba(214,180,108,.5); }
+  .fajr    { --base:#101a46; --b1:#ff9e8a; --b2:#4c62d8; --b3:#ffc978; --ink:#fffaf2; --acc:#ffd08a; --soft:rgba(255,250,242,.74); --g1:rgba(255,255,255,.26); --g2:rgba(255,255,255,.07); --line:rgba(255,208,138,.55); --chip:rgba(255,255,255,.14); --shadow:rgba(5,8,30,.55); }
+  .dhuhr   { --base:#dfeee2; --b1:#7fc4a0; --b2:#f2d9a0; --b3:#9fd0e0; --ink:#10261c; --acc:#1f6b4a; --soft:rgba(16,38,28,.66); --g1:rgba(255,255,255,.62); --g2:rgba(255,255,255,.30); --line:rgba(31,107,74,.40); --chip:rgba(255,255,255,.45); --shadow:rgba(20,60,40,.28); }
+  .asr     { --base:#f6d9b8; --b1:#ff9a5c; --b2:#ffd9a0; --b3:#d9705a; --ink:#2c160a; --acc:#9a3f1c; --soft:rgba(44,22,10,.66); --g1:rgba(255,255,255,.58); --g2:rgba(255,246,236,.26); --line:rgba(154,63,28,.40); --chip:rgba(255,255,255,.42); --shadow:rgba(110,50,20,.30); }
+  .maghrib { --base:#24133e; --b1:#ff8a5c; --b2:#9b3f9a; --b3:#ffbf6b; --ink:#fff4ea; --acc:#ffc98e; --soft:rgba(255,244,234,.76); --g1:rgba(255,255,255,.24); --g2:rgba(255,255,255,.06); --line:rgba(255,201,142,.55); --chip:rgba(255,255,255,.14); --shadow:rgba(20,5,30,.55); }
+  .isha    { --base:#060b1c; --b1:#1b6b6b; --b2:#2c3a8c; --b3:#147a5c; --ink:#f5eedd; --acc:#e2c07a; --soft:rgba(245,238,221,.70); --g1:rgba(255,255,255,.20); --g2:rgba(255,255,255,.04); --line:rgba(226,192,122,.5); --chip:rgba(255,255,255,.10); --shadow:rgba(0,0,0,.6); }
 
   .blob { position: absolute; border-radius: 50%; opacity: .9; }
   #grain { opacity: .07; width: 100%; height: 100%; }
   .dhuhr #grain, .asr #grain { opacity: .09; }
 
-  #arch { position: absolute; left: 0; }
-  #archGlass { position: absolute; background: var(--glass); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+  #arch, #archShadow { position: absolute; left: 0; top: 0; }
+  #geo { opacity: .13; }
+  .dhuhr #geo, .asr #geo { opacity: .11; }
+  .dhuhr #text, .asr #text { text-shadow: 0 1px 0 rgba(255,255,255,.55); }
+  /* frosted "liquid glass" panel */
+  #archGlass { position: absolute; background: linear-gradient(160deg, var(--g1) 0%, var(--g2) 45%, var(--g2) 100%);
+               backdrop-filter: blur(38px) saturate(175%); -webkit-backdrop-filter: blur(38px) saturate(175%); }
+  #archGlass::before { content: ""; position: absolute; inset: 0;
+               background: radial-gradient(90% 38% at 28% 0%, rgba(255,255,255,.42), rgba(255,255,255,0) 70%),
+                           radial-gradient(60% 30% at 85% 100%, rgba(255,255,255,.16), rgba(255,255,255,0) 70%); }
+  .glass-chip { background: var(--chip); backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%);
+               border: 1.5px solid rgba(255,255,255,.55); box-shadow: inset 0 1.5px 0 rgba(255,255,255,.6), 0 8px 24px var(--shadow); }
 
   #content { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
   .pill { font-family: "Readex"; font-weight: 500; font-size: 26px; color: var(--ink); letter-spacing: .5px;
-          padding: 10px 26px 12px; border-radius: 99px; border: 1.5px solid var(--line); display: inline-flex; gap: 12px; align-items: center; }
+          padding: 10px 28px 12px; border-radius: 99px; display: inline-flex; gap: 12px; align-items: center; }
   .pill b { width: 9px; height: 9px; border-radius: 50%; background: var(--acc); display: inline-block; }
   .label { font-family: "Readex"; font-weight: 700; font-size: 58px; color: var(--acc); margin-top: 34px; line-height: 1.3; }
   .sub { font-family: "Readex"; font-weight: 300; font-size: 26px; color: var(--soft); margin-top: 10px; }
   .rule { width: 64px; height: 3px; border-radius: 3px; background: var(--acc); margin: 30px 0 44px; }
-  #text { font-family: "Amiri"; font-weight: 700; line-height: 1.85; color: var(--ink); text-wrap: balance; }
+  #text { font-family: "Amiri"; font-weight: 700; line-height: 1.85; color: var(--ink); text-wrap: balance; text-shadow: 0 2px 14px var(--shadow); }
   #text.quran { font-family: "Amiri Quran"; font-weight: 400; line-height: 2.05; }
   #text .w { display: inline-block; white-space: pre; }
   .orn { color: var(--acc); }
@@ -45,7 +55,7 @@
 
   .foot, .head { position: absolute; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center;
           font-family: "Readex"; color: var(--soft); font-size: 24px; font-weight: 300; }
-  .foot .handle { font-weight: 500; color: var(--ink); direction: ltr; letter-spacing: .5px; }
+  .foot .handle { font-weight: 500; color: var(--ink); direction: ltr; letter-spacing: .5px; padding: 8px 22px 10px; border-radius: 99px; }
   .dots { display: flex; gap: 8px; }
   .dots i { width: 22px; height: 4px; border-radius: 4px; background: var(--line); opacity: .5; }
   .dots i.on { background: var(--acc); opacity: 1; width: 40px; }
@@ -58,13 +68,18 @@
   <div id="blobs" class="layer"></div>
   <div id="sparks" class="layer"></div>
   <svg id="grain" class="layer"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
+  <svg id="geo" class="layer" style="width:100%;height:100%"><defs><pattern id="star8" width="150" height="150" patternUnits="userSpaceOnUse">
+    <g fill="none" stroke="var(--acc)" stroke-width="1.6" transform="translate(75 75)"><rect x="-36" y="-36" width="72" height="72"/><rect x="-36" y="-36" width="72" height="72" transform="rotate(45)"/><circle r="16"/><path d="M-75 0H-51M51 0H75M0 -75V-51M0 51V75"/></g>
+  </pattern></defs><rect width="100%" height="100%" fill="url(#star8)"/></svg>
+  <svg id="archShadow"><defs><filter id="sh" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="34"/></filter></defs><path id="archShadowPath" fill="var(--shadow)" filter="url(#sh)"/></svg>
   <div id="archGlass"></div>
-  <svg id="arch"><path id="archPath" fill="none" stroke="var(--line)" stroke-width="2"/><path id="archPath2" fill="none" stroke="var(--line)" stroke-width="1" opacity=".5"/></svg>
+  <svg id="arch"><defs><linearGradient id="edge" x1="0" y1="0" x2="0.35" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".45" stop-color="#fff" stop-opacity=".35"/><stop offset="1" stop-color="#fff" stop-opacity=".6"/></linearGradient></defs>
+    <path id="archPath" fill="none" stroke="url(#edge)" stroke-width="2.5"/><path id="archPath2" fill="none" stroke="var(--line)" stroke-width="1.2" opacity=".7"/></svg>
 
   <svg id="crown" viewBox="-50 -50 100 100" style="position:absolute;width:64px;height:64px"><g fill="none" stroke="var(--acc)" stroke-width="3"><rect x="-26" y="-26" width="52" height="52"/><rect x="-26" y="-26" width="52" height="52" transform="rotate(45)"/><circle r="9" fill="var(--acc)" stroke="none"/></g></svg>
   <div class="head" id="head"><span id="day"></span><span class="dots" id="dots"></span></div>
   <div id="content">
-    <div class="pill" id="pill"></div>
+    <div class="pill glass-chip" id="pill"></div>
     <div class="label" id="label"></div>
     <div class="sub" id="sub" style="display:none"></div>
     <div class="rule" id="rule"></div>
@@ -72,7 +87,7 @@
     <div class="note" id="note" style="display:none"></div>
     <div class="source" id="source"></div>
   </div>
-  <div class="foot" id="foot"><span class="handle">@baqiiyaat</span><span>الباقيات الصالحات</span></div>
+  <div class="foot" id="foot"><span class="handle glass-chip">@baqiiyaat</span><span>الباقيات الصالحات</span></div>
 </div>
 
 <script>
@@ -103,6 +118,8 @@ window.setup = async (post, day, vertical) => {
   document.getElementById('archPath').setAttribute('d', archD(ax, ay, aw, ah));
   document.getElementById('archPath2').setAttribute('d', archD(ax + 18, ay + 24, aw - 36, ah - 42));
   archLen = document.getElementById('archPath').getTotalLength();
+  const sv = document.getElementById('archShadow'); sv.setAttribute('width', W); sv.setAttribute('height', H);
+  document.getElementById('archShadowPath').setAttribute('d', archD(ax + 30, ay + 46, aw - 60, ah - 20));
   Object.assign(document.getElementById('archGlass').style, { left: ax + 'px', top: ay + 'px', width: aw + 'px', height: ah + 'px',
     clipPath: `path('${archD(0, 0, aw, ah)}')` });
 
@@ -168,6 +185,7 @@ window.setT = (t, T) => {
   ['archPath','archPath2'].forEach(id => { const p = document.getElementById(id);
     p.style.strokeDasharray = archLen; p.style.strokeDashoffset = archLen * (1 - a); });
   document.getElementById('archGlass').style.opacity = still ? 1 : win(t, 0.8, 2.6);
+  document.getElementById('archShadow').style.opacity = still ? 1 : win(t, 0.8, 2.6);
 
   const fade = (id, a0, a1) => { const k = still ? 1 : win(t, a0, a1); const e = document.getElementById(id);
     e.style.opacity = k; e.style.transform = `translateY(${(1-k)*18}px)`; };
