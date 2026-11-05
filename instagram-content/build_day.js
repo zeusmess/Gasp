@@ -1,8 +1,9 @@
-// Builds one day of the series for @baqiiyaat (Instagram + TikTok): 3 feed posts and 5 stories a day:
+// Builds one day of the series for @baqiiyaat (Instagram + TikTok): 2 Reels, 4 images and 5 stories a day:
 //
 //   prayer duas   5 Instagram Stories, one after each prayer (times follow the prayer)
 //   reels         2 Reels with Sheikh al-Minshawi's recitation at 10:00 and 18:00 (Instagram + TikTok)
-//   midday        1 image at 13:00, rotating hadith / dua from the Quran / ayah (Instagram + TikTok)
+//   images        4 a day (sunrise, 09:00, before sunset, 20:00): Instagram post; on TikTok the same
+//                 design as a short video with a recitation, reciters taking turns
 //
 //   node build_day.js 2026-11-07                 -> out/2026-11-07/*, posts.json
 //   node build_day.js 2026-11-07 --only reel1,hadith
@@ -21,7 +22,15 @@ const START = '2026-11-05', END = '2026-12-04';
 const TZ = 'Africa/Cairo';
 const FPS = 30, INTRO = 0.3, OUTRO = 1.8;
 const RECITER = 'Minshawy_Murattal_128kbps';
-const AUDIO_URL = f => `https://everyayah.com/data/${RECITER}/${f}`;
+const AUDIO_URL = (f, r = RECITER) => `https://everyayah.com/data/${r}/${f}`;
+// reciters that take turns under the TikTok photo-videos
+const RECITERS = [
+  { dir: 'Minshawy_Murattal_128kbps', name: 'الشيخ محمد صديق المنشاوي' },
+  { dir: 'Abdul_Basit_Murattal_192kbps', name: 'الشيخ عبد الباسط عبد الصمد' },
+  { dir: 'Husary_128kbps', name: 'الشيخ محمود خليل الحصري' },
+  { dir: 'Alafasy_128kbps', name: 'الشيخ مشاري العفاسي' },
+  { dir: 'MaherAlMuaiqly128kbps', name: 'الشيخ ماهر المعيقلي' },
+];
 const CAIRO = new adhan.Coordinates(30.0444, 31.2357);
 
 const ar = n => String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
@@ -76,13 +85,16 @@ function planFor(dateStr) {
   posts.push({ id: 'reel1', kind: 'video', type: 'reel', time: '10:00', theme: 'dhuhr', pill: 'تلاوة اليوم',
     ayah: friday ? pick(FRIDAY, fridaysBefore) : pick(morning, idx * 2) });
   posts.push({ id: 'reel2', kind: 'video', type: 'reel', time: '18:00', theme: 'maghrib', pill: 'تلاوة المساء', ayah: pick(evening, idx * 2) });
-  // one feed image a day, rotating hadith / dua from the Quran / ayah
-  const midTime = friday ? '13:30' : '13:00', r = Math.floor(idx / 3);
-  posts.push([
-    { id: 'hadith', kind: 'image', type: 'hadith', time: midTime, theme: 'dhuhr', pill: 'حديث اليوم', item: pick(HADITH, r) },
-    { id: 'qdua', kind: 'image', type: 'qdua', time: midTime, theme: 'asr', pill: 'دعاء من القرآن', ayah: pick(QDUAS, r) },
-    { id: 'ayah', kind: 'image', type: 'ayah', time: midTime, theme: 'isha', pill: 'آية وتدبر', ayah: pick(ayahImgs, r) },
-  ][idx % 3]);
+  // four images a day (sunrise, morning, sunset, evening): an Instagram post, and on TikTok
+  // the same design as a short video with a recitation underneath (reciters take turns)
+  const sunrise = cairoMinutes(pt.sunrise), sunset = pmin.M;
+  const bg = AYAT.filter(a => a[1] === a[2] && verse(a[0], a[1]).length < 140);
+  const dual = (id, n, extra) => ({ id, kind: 'dual', ...extra,
+    bgAyah: pick(bg, idx * 4 + n), reciter: pick(RECITERS, idx * 4 + n) });
+  posts.push(dual('sunrise', 0, { type: 'dhikr', time: hhmm(round5(sunrise + 10)), theme: 'fajr', pill: 'مع الشروق', item: pick(ADHKAR.F, idx + 3) }));
+  posts.push(dual('morning', 1, { type: 'hadith', time: '09:00', theme: 'dhuhr', pill: 'حديث اليوم', item: pick(HADITH, idx) }));
+  posts.push(dual('sunset', 2, { type: 'ayah', time: hhmm(round5(sunset - 20)), theme: 'asr', pill: 'قبل الغروب', ayah: pick(ayahImgs, idx) }));
+  posts.push(dual('evening', 3, { type: 'qdua', time: '20:00', theme: 'isha', pill: 'دعاء المساء', ayah: pick(QDUAS, idx) }));
   posts.sort((x, y) => x.time.localeCompare(y.time));
   return { idx, friday, label: `${DAYS_AR[d.getUTCDay()]} · ${ar(d.getUTCDate())} ${MONTHS_AR[d.getUTCMonth()]}`, posts };
 }
@@ -171,7 +183,7 @@ async function buildReel(page, plan, post, base, cache) {
 async function buildImage(page, plan, post, base) {
   let card, caption, title;
   const n = plan.idx + post.id.length;
-  if (post.type === 'prayerDua') {
+  if (post.type === 'prayerDua' || post.type === 'dhikr') {
     const it = post.item;
     card = { label: it.label, text: it.text, note: it.note, source: it.source, font: 'dhikr' };
     caption = [`${post.pill} 🤲`, '', `«${it.text}»${it.note ? ` (${it.note})` : ''}`, `(${it.source})`, '', pick(CTAS, n), '', TAGS.dua].join('\n');
@@ -191,7 +203,40 @@ async function buildImage(page, plan, post, base) {
   await page.evaluate(([p, d, v]) => window.setup(p, d, v), [{ theme: post.theme, pill: post.pill, prayer: '', ...card }, plan.label, post.kind === 'story']);
   await page.evaluate(() => window.setT(99, 99));
   await page.screenshot({ path: base + '.png' });
-  return { caption, file: path.basename(base) + '.png', title };
+  return { caption, file: path.basename(base) + '.png', title, card };
+}
+
+// TikTok version of a feed image: the vertical design, gently moving, with a recitation underneath
+async function buildPhotoVideo(page, plan, post, base, cache, card, caption) {
+  const [s, a] = post.bgAyah, rc = post.reciter;
+  const file = `${pad3(s)}${pad3(a)}.mp3`;
+  const local = path.join(cache, rc.dir); fs.mkdirSync(local, { recursive: true });
+  let audioPath = path.join(local, file);
+  if (!(fs.existsSync(audioPath) && fs.statSync(audioPath).size > 1000)) {
+    try { execFileSync('curl', ['-sSf', '--max-time', '60', '--retry', '3', '-o', audioPath, AUDIO_URL(file, rc.dir)]); }
+    catch (e) { console.warn('audio unavailable', rc.dir, file); audioPath = null; }
+  }
+  const T = Math.max(8, (audioPath ? duration(audioPath) : 8) + 1.5);
+  await page.setViewportSize({ width: 1080, height: 1920 });
+  await page.evaluate(([p, d]) => window.setup(p, d, true), [{ theme: post.theme, pill: post.pill, prayer: '', ...card }, plan.label]);
+  const args = ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(FPS), '-i', '-'];
+  if (audioPath) args.push('-i', audioPath, '-filter_complex', `[1:a]aresample=44100,adelay=400:all=1,apad,afade=t=out:st=${(T - 1).toFixed(2)}:d=1[a]`, '-map', '0:v', '-map', '[a]');
+  else args.push('-f', 'lavfi', '-i', 'anullsrc=r=44100:cl=stereo', '-map', '0:v', '-map', '1:a');
+  args.push('-t', T.toFixed(2), '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-preset', 'medium', '-crf', '20', '-c:a', 'aac', '-b:a', '160k', '-movflags', '+faststart', base + '-tiktok.mp4');
+  const ff = spawn('ffmpeg', args, { stdio: ['pipe', 'inherit', 'inherit'] });
+  for (let f = 0, n = Math.ceil(T * FPS); f < n; f++) {
+    await page.evaluate(x => window.setT(x + 10, 1e9), f / FPS);   // text fully shown, background drifts
+    const buf = await page.screenshot({ type: 'jpeg', quality: 92 });
+    if (!ff.stdin.write(buf)) await new Promise(r => ff.stdin.once('drain', r));
+  }
+  ff.stdin.end();
+  if (await new Promise(r => ff.on('close', r)) !== 0) throw new Error('ffmpeg failed for ' + post.id);
+  await page.screenshot({ path: base + '-tiktok-cover.png' });
+  const lines = caption.split('\n'), tags = lines.pop();
+  const tkCaption = [...lines, audioPath ? `🎧 في الخلفية: ${refShort(post.bgAyah).replace('[', '[سورة ')} بصوت ${rc.name}` : null, '', tags + ' #قرآن_كريم']
+    .filter(x => x !== null).join('\n').replace(/\n{3,}/g, '\n\n');
+  return { tiktokFile: path.basename(base) + '-tiktok.mp4', tiktokCover: path.basename(base) + '-tiktok-cover.png',
+    tiktokCaption: tkCaption, audio: !!audioPath, reciter: rc.name, bgAyah: post.bgAyah.slice(0, 2).join(':'), seconds: +T.toFixed(1) };
 }
 
 async function main() {
@@ -211,11 +256,13 @@ async function main() {
   for (const post of plan.posts) {
     if (only && !only.includes(post.id)) continue;
     const base = path.join(outDir, `${post.time.replace(':', '')}-${post.id}`);
-    await page.setViewportSize({ width: 1080, height: post.kind === 'image' ? 1350 : 1920 });
-    const r = post.kind === 'video' ? await buildReel(page, plan, post, base, cache) : await buildImage(page, plan, post, base);
+    await page.setViewportSize({ width: 1080, height: post.kind === 'image' || post.kind === 'dual' ? 1350 : 1920 });
+    let r = post.kind === 'video' ? await buildReel(page, plan, post, base, cache) : await buildImage(page, plan, post, base);
+    if (post.kind === 'dual') { const v = await buildPhotoVideo(page, plan, post, base, cache, r.card, r.caption); r = { ...r, ...v }; fs.writeFileSync(base + '-tiktok.txt', v.tiktokCaption + '\n'); }
+    delete r.card;
     fs.writeFileSync(base + '.txt', r.caption + '\n');
     done.push({ id: post.id, kind: post.kind, time: post.time, ...r });
-    console.log(`${post.time} ${post.id}${post.kind === 'video' ? `  ${post.ayah.slice(0, 3).join(':')}  ${r.seconds}s  audio=${r.audio}` : ''}`);
+    console.log(`${post.time} ${post.id}${post.kind === 'video' ? `  ${post.ayah.slice(0, 3).join(':')}  ${r.seconds}s  audio=${r.audio}` : ''}${post.kind === 'dual' ? `  tiktok ${r.bgAyah} ${r.reciter} ${r.seconds}s audio=${r.audio}` : ''}`);
   }
   await browser.close();
   // merge with posts already built for this date (when --only is used)

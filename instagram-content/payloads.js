@@ -24,6 +24,19 @@ for (const p of posts) {
       publicationDate: { dateTime: `${date}T${p.time}:00`, timezone: 'Africa/Cairo' }, instagramData: { type: 'STORY' } } });
     continue;
   }
+  if (p.kind === 'dual') {
+    // Instagram: the image as a feed post. TikTok: the same design as a video with a recitation.
+    const common = { autoPublish: true, draft: false, descendants: [], firstCommentText: '', hasNotReadNotes: false,
+      shortener: false, smartLinkData: { ids: [] }, mediaAltText: [],
+      publicationDate: { dateTime: `${date}T${p.time}:00`, timezone: 'Africa/Cairo' } };
+    out.push({ id: p.id + '-instagram', time: p.time, blogId: '7891780', date: `${date}T${p.time}:00+02:00`, info: {
+      ...common, media: [`${base}/${p.file}`], providers: [{ network: 'instagram' }], text: p.caption, instagramData: { type: 'POST' } } });
+    out.push({ id: p.id + '-tiktok', time: p.time, audio: p.audio, blogId: '7891780', date: `${date}T${p.time}:00+02:00`, info: {
+      ...common, media: [`${base}/${p.tiktokFile}`], videoThumbnailUrl: `${base}/${p.tiktokCover}`, providers: [{ network: 'tiktok' }],
+      text: p.tiktokCaption, tiktokData: { privacyOption: 'PUBLIC_TO_EVERYONE', disableComment: false, disableDuet: false, disableStitch: false,
+        commercialContentThirdParty: false, commercialContentOwnBrand: false, autoAddMusic: false, title: p.title } } });
+    continue;
+  }
   const info = {
     autoPublish: true, draft: false, descendants: [], firstCommentText: '', hasNotReadNotes: false,
     shortener: false, smartLinkData: { ids: [] },
