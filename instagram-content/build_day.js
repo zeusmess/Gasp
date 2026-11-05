@@ -1,8 +1,8 @@
-// Builds one day of the series for @baqiiyaat (Instagram + TikTok), 10 posts a day:
+// Builds one day of the series for @baqiiyaat (Instagram + TikTok): 3 feed posts and 5 stories a day:
 //
-//   prayer duas   5 images, one after each prayer (times follow the prayer)
-//   reels         2 Reels with Sheikh al-Minshawi's recitation, at the peak reach hours
-//   midday        3 images at peak hours: a hadith, a dua from the Quran, an ayah
+//   prayer duas   5 Instagram Stories, one after each prayer (times follow the prayer)
+//   reels         2 Reels with Sheikh al-Minshawi's recitation at 10:00 and 18:00 (Instagram + TikTok)
+//   midday        1 image at 13:00, rotating hadith / dua from the Quran / ayah (Instagram + TikTok)
 //
 //   node build_day.js 2026-11-07                 -> out/2026-11-07/*, posts.json
 //   node build_day.js 2026-11-07 --only reel1,hadith
@@ -71,14 +71,18 @@ function planFor(dateStr) {
   const morning = AYAT.filter(a => a[3] === 'F' || a[3] === 'D'), evening = AYAT.filter(a => a[3] === 'M' || a[3] === 'I');
   const ayahImgs = AYAT.filter(a => a[3] === 'A');
   const posts = [];
-  for (const p of PRAYERS) posts.push({ id: `dua-${p.id}`, kind: 'image', type: 'prayerDua', time: hhmm(after[p.key]), theme: p.id,
+  for (const p of PRAYERS) posts.push({ id: `dua-${p.id}`, kind: 'story', type: 'prayerDua', time: hhmm(after[p.key]), theme: p.id,
     pill: `بعد صلاة ${p.key === 'D' && friday ? 'الجمعة' : p.prayer}`, item: pick(ADHKAR[p.key], idx) });
   posts.push({ id: 'reel1', kind: 'video', type: 'reel', time: '10:00', theme: 'dhuhr', pill: 'تلاوة اليوم',
     ayah: friday ? pick(FRIDAY, fridaysBefore) : pick(morning, idx * 2) });
   posts.push({ id: 'reel2', kind: 'video', type: 'reel', time: '18:00', theme: 'maghrib', pill: 'تلاوة المساء', ayah: pick(evening, idx * 2) });
-  posts.push({ id: 'hadith', kind: 'image', type: 'hadith', time: '11:00', theme: 'dhuhr', pill: 'حديث اليوم', item: pick(HADITH, idx) });
-  posts.push({ id: 'qdua', kind: 'image', type: 'qdua', time: friday ? '13:30' : '13:00', theme: 'asr', pill: 'دعاء من القرآن', ayah: pick(QDUAS, idx) });
-  posts.push({ id: 'ayah', kind: 'image', type: 'ayah', time: '16:00', theme: 'isha', pill: 'آية وتدبر', ayah: pick(ayahImgs, idx) });
+  // one feed image a day, rotating hadith / dua from the Quran / ayah
+  const midTime = friday ? '13:30' : '13:00', r = Math.floor(idx / 3);
+  posts.push([
+    { id: 'hadith', kind: 'image', type: 'hadith', time: midTime, theme: 'dhuhr', pill: 'حديث اليوم', item: pick(HADITH, r) },
+    { id: 'qdua', kind: 'image', type: 'qdua', time: midTime, theme: 'asr', pill: 'دعاء من القرآن', ayah: pick(QDUAS, r) },
+    { id: 'ayah', kind: 'image', type: 'ayah', time: midTime, theme: 'isha', pill: 'آية وتدبر', ayah: pick(ayahImgs, r) },
+  ][idx % 3]);
   posts.sort((x, y) => x.time.localeCompare(y.time));
   return { idx, friday, label: `${DAYS_AR[d.getUTCDay()]} · ${ar(d.getUTCDate())} ${MONTHS_AR[d.getUTCMonth()]}`, posts };
 }
@@ -184,7 +188,7 @@ async function buildImage(page, plan, post, base) {
       '', pick(CTAS, n), '', isDua ? TAGS.qdua : TAGS.ayah].join('\n');
     title = isDua ? 'دعاء من القرآن' : 'آية اليوم';
   }
-  await page.evaluate(([p, d]) => window.setup(p, d, false), [{ theme: post.theme, pill: post.pill, prayer: '', ...card }, plan.label]);
+  await page.evaluate(([p, d, v]) => window.setup(p, d, v), [{ theme: post.theme, pill: post.pill, prayer: '', ...card }, plan.label, post.kind === 'story']);
   await page.evaluate(() => window.setT(99, 99));
   await page.screenshot({ path: base + '.png' });
   return { caption, file: path.basename(base) + '.png', title };
@@ -207,7 +211,7 @@ async function main() {
   for (const post of plan.posts) {
     if (only && !only.includes(post.id)) continue;
     const base = path.join(outDir, `${post.time.replace(':', '')}-${post.id}`);
-    await page.setViewportSize({ width: 1080, height: post.kind === 'video' ? 1920 : 1350 });
+    await page.setViewportSize({ width: 1080, height: post.kind === 'image' ? 1350 : 1920 });
     const r = post.kind === 'video' ? await buildReel(page, plan, post, base, cache) : await buildImage(page, plan, post, base);
     fs.writeFileSync(base + '.txt', r.caption + '\n');
     done.push({ id: post.id, kind: post.kind, time: post.time, ...r });

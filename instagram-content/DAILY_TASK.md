@@ -1,15 +1,15 @@
-# Daily task: build and schedule today's 10 posts for @baqiiyaat (Instagram + TikTok)
+# Daily task: build and schedule today's posts for @baqiiyaat (Instagram + TikTok)
 
 Runs once a day (early morning, Cairo time) until 2026-12-04. The series started
 2026-11-05; Nov 5–6 were built by hand.
 
-Each day has 10 posts, all published to Instagram and TikTok together:
+Each day: 3 feed posts on Instagram and TikTok, plus 5 Instagram Stories.
 
-| time | post |
-|---|---|
-| after each of the 5 prayers | dua / dhikr image (time follows the prayer) |
-| 10:00 and 18:00 | Reel with Sheikh al-Minshawi's recitation (peak reach hours) |
-| 11:00, 13:00 (13:30 Fri), 16:00 | hadith image, dua-from-the-Quran image, ayah image |
+| time | post | where |
+|---|---|---|
+| 10:00 and 18:00 | Reel with Sheikh al-Minshawi's recitation | Instagram + TikTok |
+| 13:00 (13:30 Fri) | one image, rotating hadith / dua from the Quran / ayah | Instagram + TikTok |
+| after each of the 5 prayers | dua / dhikr image | Instagram Story |
 
 ## Steps
 
@@ -20,7 +20,7 @@ Each day has 10 posts, all published to Instagram and TikTok together:
    If `instagram-content/out/$D/posts.json` exists with `"version": 2` and those posts are
    already scheduled in Metricool (check `getScheduledPosts` for brand 7891780 on that date),
    stop: the day is done.
-3. **Build.** `cd instagram-content && npm install --silent && node build_day.js $D` (about 10–15 minutes).
+3. **Build.** `cd instagram-content && npm install --silent && node build_day.js $D` (about 5–10 minutes).
    Exit code 4 means the series has not started yet, exit code 3 means it is over: report that and stop.
    Note in the report any line saying `audio unavailable` (the Reel was rendered silent,
    usually because `everyayah.com` is not in the environment's allowed network domains).
@@ -29,7 +29,7 @@ Each day has 10 posts, all published to Instagram and TikTok together:
 5. **Schedule.** `node payloads.js $D <sha>` prints one entry per post that is still in the future.
    For each entry call Metricool `createScheduledPost` with its `blogId`, `date` and `info`
    (pass `info` as a JSON string). Do not change the caption text.
-6. **Report.** One short message in Egyptian Arabic: the 10 times, the ayah of each Reel,
+6. **Report.** One short message in Egyptian Arabic: the times of the 3 feed posts and 5 stories, the ayah of each Reel,
    whether the recitation audio was included, and any post that failed.
 
 Never invent or retype Quran text: it comes only from `quran-json` via `build_day.js`.

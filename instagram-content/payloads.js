@@ -16,6 +16,14 @@ for (const p of posts) {
   const when = new Date(`${date}T${p.time}:00+02:00`);  // Cairo is UTC+2 all through Nov–Dec 2026
   if (when.getTime() < now + 3 * 60e3) { console.error(`skip ${p.id}: ${p.time} already passed`); continue; }
   const video = p.kind === 'video';
+  if (p.kind === 'story') {
+    // Instagram Story only: a Story published on its own must not carry text
+    out.push({ id: p.id, time: p.time, blogId: '7891780', date: `${date}T${p.time}:00+02:00`, info: {
+      autoPublish: true, draft: false, descendants: [], firstCommentText: '', hasNotReadNotes: false, shortener: false,
+      smartLinkData: { ids: [] }, media: [`${base}/${p.file}`], mediaAltText: [], providers: [{ network: 'instagram' }],
+      publicationDate: { dateTime: `${date}T${p.time}:00`, timezone: 'Africa/Cairo' }, instagramData: { type: 'STORY' } } });
+    continue;
+  }
   const info = {
     autoPublish: true, draft: false, descendants: [], firstCommentText: '', hasNotReadNotes: false,
     shortener: false, smartLinkData: { ids: [] },
