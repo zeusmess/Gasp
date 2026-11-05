@@ -1,6 +1,6 @@
 # Daily task: build and schedule today's 5 Reels for @baqiiyaat
 
-Runs once a day (early morning, Cairo time) from 2026-11-07 to 2026-12-04.
+Runs once a day (early morning, Cairo time) from 2026-11-07 to 2026-12-04 (the series itself started 2026-11-05 at Asr; Nov 5–6 were built by hand).
 Each run builds the day's 5 Reels (one after each prayer: Minshawi recitation of the
 day's ayah, then a dhikr/dua screen) and schedules them on Metricool.
 

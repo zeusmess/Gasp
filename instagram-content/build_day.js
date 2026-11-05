@@ -2,7 +2,7 @@
 // Sheikh Muhammad Siddiq al-Minshawi reciting the day's ayah, then a dhikr/dua screen.
 //
 //   node build_day.js 2026-11-07            -> out/2026-11-07/*.mp4, *-cover.png, posts.json
-//   node build_day.js 2026-11-07 --only fajr
+//   node build_day.js 2026-11-07 --only asr,maghrib,isha
 //
 // Audio comes from everyayah.com (per-ayah MP3s). If it cannot be downloaded, the
 // Reel is rendered silent and posts.json records audio:false so the caption does not
@@ -15,7 +15,7 @@ const adhan = require('adhan');
 const { AYAT, FRIDAY, ADHKAR } = require('./plan-data');
 const { verse, surahName, BASMALA, forFont } = require('./lib-quran');
 
-const START = '2026-11-07', END = '2026-12-04';
+const START = '2026-11-05', END = '2026-12-04';
 const TZ = 'Africa/Cairo';
 const FPS = 30, INTRO = 1.6, DHIKR = 7.5;
 const RECITER = 'Minshawy_Murattal_128kbps';
@@ -197,7 +197,7 @@ async function buildSlot(page, plan, slot, outDir, cache) {
 }
 
 async function main() {
-  const date = process.argv[2], only = process.argv.includes('--only') ? process.argv[process.argv.indexOf('--only') + 1] : null;
+  const date = process.argv[2], only = process.argv.includes('--only') ? process.argv[process.argv.indexOf('--only') + 1].split(',') : null;
   const plan = planFor(date);
   if (!plan) {
     if (date < START) { console.log(`Series starts ${START}; nothing to build for ${date}.`); process.exit(4); }
@@ -209,9 +209,9 @@ async function main() {
   const page = await browser.newPage({ viewport: { width: 1080, height: 1920 } });
   await page.goto('file://' + path.join(__dirname, 'template.html'));
   const posts = [];
-  for (const slot of plan.slots) if (!only || slot.id === only) posts.push(await buildSlot(page, plan, slot, outDir, cache));
+  for (const slot of plan.slots) if (!only || only.includes(slot.id)) posts.push(await buildSlot(page, plan, slot, outDir, cache));
   await browser.close();
-  if (!only) fs.writeFileSync(path.join(outDir, 'posts.json'), JSON.stringify({ date, posts }, null, 2));
+  fs.writeFileSync(path.join(outDir, 'posts.json'), JSON.stringify({ date, posts }, null, 2));
 }
 if (require.main === module) main().catch(e => { console.error(e); process.exit(1); });
 module.exports = { planFor };
