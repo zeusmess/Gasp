@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_top">#FF1E1B4B</color>
+    <color name="bg_mid">#FF312E81</color>
+    <color name="bg_bottom">#FF0F766E</color>
+    <color name="glass_fill">#24FFFFFF</color>
+    <color name="glass_fill_strong">#38FFFFFF</color>
+    <color name="glass_stroke">#55FFFFFF</color>
+    <color name="text_primary">#FFFFFFFF</color>
+    <color name="text_secondary">#C8FFFFFF</color>
+    <color name="text_muted">#99FFFFFF</color>
+    <color name="accent">#FF7C5CFF</color>
+    <color name="accent_cyan">#FF6EE7F9</color>
+    <color name="accent_pink">#FFF472B6</color>
+</resources>

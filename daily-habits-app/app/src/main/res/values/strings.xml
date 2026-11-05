@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">عاداتي الزجاجية</string>
+    <string name="widget_name">عاداتي اليوم</string>
+    <string name="widget_desc">تقدّمك اليومي وزر إضافة سريع</string>
+    <string name="channel_name">تذكير العادات كل ساعة</string>
+    <string name="channel_desc">تنبيه لطيف كل ساعة بعادة صحية</string>
+
+    <string name="good_morning">صباح الخير ☀️</string>
+    <string name="good_afternoon">نهارك سعيد 🌤️</string>
+    <string name="good_evening">مساء الخير 🌙</string>
+    <string name="today">اليوم</string>
+    <string name="done_of">%1$d من %2$d مكتملة</string>
+    <string name="streak_days">🔥 %1$d أيام متتالية</string>
+    <string name="next_reminder">⏰ التذكير القادم %1$s</string>
+    <string name="reminders_off_short">🔕 التذكير متوقف</string>
+    <string name="tip_title">💡 نصيحة الساعة</string>
+    <string name="my_habits">عاداتي اليوم</string>
+    <string name="add">＋ إضافة</string>
+    <string name="settings">⚙️ الإعدادات</string>
+    <string name="hourly_reminders">التذكير كل ساعة</string>
+    <string name="active_hours">ساعات التذكير</string>
+    <string name="hours_value">من %1$s إلى %2$s</string>
+    <string name="exact_hint">⚠️ اسمح بالمنبهات الدقيقة ليصلك التذكير على رأس الساعة تماماً (اضغط هنا)</string>
+    <string name="test_notification">🔔 تجربة التنبيه</string>
+    <string name="add_widget">🪟 أضف الويدجت</string>
+    <string name="widget_manual">اضغط مطولاً على الشاشة الرئيسية ← الأدوات (Widgets) ← عاداتي اليوم</string>
+    <string name="long_press_hint">اضغط على العادة لتسجيلها • اضغط مطولاً للخيارات</string>
+
+    <string name="all_done_title">🎉 أنجزت كل عادات اليوم!</string>
+    <string name="action_done">✓ تم</string>
+    <string name="action_later">لاحقاً</string>
+    <string name="habit_done">%1$s أحسنت! اكتملت العادة</string>
+
+    <string name="minus_one">− إنقاص مرة</string>
+    <string name="reset">↺ تصفير اليوم</string>
+    <string name="delete">🗑 حذف العادة</string>
+    <string name="add_habit">عادة جديدة</string>
+    <string name="emoji_hint">رمز تعبيري</string>
+    <string name="name_hint">اسم العادة</string>
+    <string name="note_hint">ملاحظة قصيرة (اختياري)</string>
+    <string name="times_per_day">عدد المرات يومياً</string>
+    <string name="save">حفظ</string>
+    <string name="cancel">إلغاء</string>
+    <string name="from">من</string>
+    <string name="to">إلى</string>
+</resources>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- frosted fill -->
+    <item>
+        <shape>
+            <corners android:radius="26dp" />
+            <gradient
+                android:angle="315"
+                android:startColor="#33FFFFFF"
+                android:endColor="#14FFFFFF" />
+        </shape>
+    </item>
+    <!-- light edge -->
+    <item>
+        <shape>
+            <corners android:radius="26dp" />
+            <stroke android:width="1dp" android:color="@color/glass_stroke" />
+        </shape>
+    </item>
+    <!-- top highlight sheen -->
+    <item android:bottom="40dp">
+        <shape>
+            <corners android:topLeftRadius="26dp" android:topRightRadius="26dp" />
+            <gradient
+                android:angle="270"
+                android:startColor="#1AFFFFFF"
+                android:endColor="#00FFFFFF" />
+        </shape>
+    </item>
+</layer-list>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- tinted frosted glass: translucent so the wallpaper shows through -->
+    <item>
+        <shape>
+            <corners android:radius="28dp" />
+            <gradient
+                android:angle="315"
+                android:startColor="#552A2560"
+                android:centerColor="#3D3B3480"
+                android:endColor="#40105E5A" />
+        </shape>
+    </item>
+    <item>
+        <shape>
+            <corners android:radius="28dp" />
+            <gradient
+                android:angle="315"
+                android:startColor="#30FFFFFF"
+                android:endColor="#0DFFFFFF" />
+            <stroke android:width="1dp" android:color="#66FFFFFF" />
+        </shape>
+    </item>
+</layer-list>
