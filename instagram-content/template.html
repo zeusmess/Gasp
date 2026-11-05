@@ -33,6 +33,7 @@
           padding: 10px 26px 12px; border-radius: 99px; border: 1.5px solid var(--line); display: inline-flex; gap: 12px; align-items: center; }
   .pill b { width: 9px; height: 9px; border-radius: 50%; background: var(--acc); display: inline-block; }
   .label { font-family: "Readex"; font-weight: 700; font-size: 58px; color: var(--acc); margin-top: 34px; line-height: 1.3; }
+  .sub { font-family: "Readex"; font-weight: 300; font-size: 26px; color: var(--soft); margin-top: 10px; }
   .rule { width: 64px; height: 3px; border-radius: 3px; background: var(--acc); margin: 30px 0 44px; }
   #text { font-family: "Amiri"; font-weight: 700; line-height: 1.85; color: var(--ink); text-wrap: balance; }
   #text.quran { font-family: "Amiri Quran"; font-weight: 400; line-height: 2.05; }
@@ -65,6 +66,7 @@
   <div id="content">
     <div class="pill" id="pill"></div>
     <div class="label" id="label"></div>
+    <div class="sub" id="sub" style="display:none"></div>
     <div class="rule" id="rule"></div>
     <div id="text"></div>
     <div class="note" id="note" style="display:none"></div>
@@ -176,6 +178,47 @@ window.setT = (t, T) => {
     w.style.opacity = k; w.style.transform = `translateY(${(1-k)*14}px)`; w.style.filter = k < 1 ? `blur(${(1-k)*5}px)` : ''; });
   const end = w0 + words.length*per + 0.4;
   fade('note', end, end + 0.8); fade('source', end + 0.3, end + 1.1);
+};
+
+// ---- segment mode (reels with several screens: basmala / ayah chunks / dhikr) ----
+let SEG = null, curSeg = -1;
+function fillSeg(sg) {
+  document.getElementById('label').textContent = sg.label;
+  const sub = document.getElementById('sub'); sub.style.display = sg.sub ? '' : 'none'; sub.textContent = sg.sub || '';
+  const note = document.getElementById('note'); note.style.display = sg.note ? '' : 'none'; note.textContent = sg.note || '';
+  document.getElementById('source').textContent = sg.source || '';
+  const tx = document.getElementById('text');
+  tx.className = sg.quran ? 'quran' : '';
+  const [o, cl] = sg.quran ? ['﴿', '﴾'] : ['«', '»'];
+  const ws = sg.text.split(' ').reduce((a, w) => (/^[ۖ-ۜ]$/.test(w) && a.length ? (a[a.length-1] += ' ' + w) : a.push(w), a), []);
+  const open = sg.open !== false, close = sg.close !== false;
+  tx.innerHTML = ws.map((w, i) => `<span class="w">${i===0&&open?`<span class="orn">${o}</span>`:''}${w}${i===ws.length-1&&close?`<span class="orn">${cl}</span>`:''}</span>`).join(' ');
+  words = [...tx.querySelectorAll('.w')];
+  if (sg.fs) tx.style.fontSize = sg.fs + 'px';
+}
+window.setupSegments = async (post, day, segs) => {
+  await window.setup(Object.assign({}, post, { text: segs[0].text, label: segs[0].label, source: segs[0].source }), day, true);
+  SEG = segs; curSeg = -1;
+  const c = document.getElementById('content'), tx = document.getElementById('text');
+  const fits = () => [...c.children].reduce((h, e) => h + (e.offsetParent ? e.offsetHeight : 0), 0) + 150 < c.clientHeight;
+  for (const sg of SEG) { sg.fs = null; fillSeg(sg); let fs = sg.quran ? 76 : 70; tx.style.fontSize = fs + 'px';
+    while (fs > 34 && !fits()) { fs -= 2; tx.style.fontSize = fs + 'px'; } sg.fs = fs; }
+};
+window.setSegT = (t) => {
+  window.setT(t, 1e9);  // background, arch, header animation
+  let i = SEG.findIndex(sg => t >= sg.start && t < sg.end); if (i < 0) i = t < SEG[0].start ? 0 : SEG.length - 1;
+  if (i !== curSeg) { fillSeg(SEG[i]); curSeg = i; }
+  const sg = SEG[i], first = i === 0;
+  const fadeOut = i < SEG.length - 1 ? clamp((sg.end - t) / 0.35) : 1;
+  const show = (id, a0, a1) => { const k = win(t, a0, a1) * fadeOut; const e = document.getElementById(id);
+    e.style.opacity = k; e.style.transform = `translateY(${(1 - k) * 14}px)`; };
+  const s0 = first ? Math.max(sg.start, 1.0) : sg.start;
+  show('label', s0, s0 + 0.6); show('sub', s0 + 0.2, s0 + 0.8);
+  const span = Math.min((sg.end - sg.start) * 0.55, Math.max(1.2, words.length * 0.28));
+  const per = span / Math.max(words.length, 1), w0 = s0 + 0.3;
+  words.forEach((w, j) => { const k = win(t, w0 + j * per, w0 + j * per + 0.6) * fadeOut;
+    w.style.opacity = k; w.style.transform = `translateY(${(1 - k) * 12}px)`; w.style.filter = k < 1 ? `blur(${(1 - k) * 4}px)` : ''; });
+  show('note', w0 + span, w0 + span + 0.6); show('source', w0 + span + 0.2, w0 + span + 0.8);
 };
 </script>
 </body>

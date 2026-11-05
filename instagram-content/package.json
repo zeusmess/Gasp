@@ -1,0 +1,9 @@
+{
+  "name": "baqiiyaat-content",
+  "private": true,
+  "description": "Daily Islamic Instagram content generator for @baqiiyaat",
+  "dependencies": {
+    "adhan": "4.4.6",
+    "quran-json": "3.1.2"
+  }
+}
