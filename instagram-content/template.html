@@ -115,7 +115,8 @@ window.setup = async (post, day, vertical) => {
 
   document.getElementById('day').textContent = day;
   document.getElementById('dots').innerHTML = ORDER.map(o => `<i class="${o===post.theme?'on':''}"></i>`).join('');
-  document.getElementById('pill').innerHTML = `<b></b>بعد صلاة ${post.prayer}`;
+  document.getElementById('pill').innerHTML = `<b></b>${post.pill || 'بعد صلاة ' + post.prayer}`;
+  document.getElementById('dots').style.visibility = (!post.pill || post.pill.startsWith('بعد صلاة')) ? '' : 'hidden';
   document.getElementById('label').textContent = post.label;
   const note = document.getElementById('note');
   note.style.display = post.note ? '' : 'none'; note.textContent = post.note || '';
@@ -205,14 +206,14 @@ window.setupSegments = async (post, day, segs) => {
     while (fs > 34 && !fits()) { fs -= 2; tx.style.fontSize = fs + 'px'; } sg.fs = fs; }
 };
 window.setSegT = (t) => {
-  window.setT(t, 1e9);  // background, arch, header animation
+  window.setT(t + 2.6, 1e9);  // frame already drawn at t=0 so the ayah is the hook
   let i = SEG.findIndex(sg => t >= sg.start && t < sg.end); if (i < 0) i = t < SEG[0].start ? 0 : SEG.length - 1;
   if (i !== curSeg) { fillSeg(SEG[i]); curSeg = i; }
   const sg = SEG[i], first = i === 0;
   const fadeOut = i < SEG.length - 1 ? clamp((sg.end - t) / 0.35) : 1;
   const show = (id, a0, a1) => { const k = win(t, a0, a1) * fadeOut; const e = document.getElementById(id);
     e.style.opacity = k; e.style.transform = `translateY(${(1 - k) * 14}px)`; };
-  const s0 = first ? Math.max(sg.start, 1.0) : sg.start;
+  const s0 = sg.start + 0.05;
   show('label', s0, s0 + 0.6); show('sub', s0 + 0.2, s0 + 0.8);
   const span = Math.min((sg.end - sg.start) * 0.55, Math.max(1.2, words.length * 0.28));
   const per = span / Math.max(words.length, 1), w0 = s0 + 0.3;
