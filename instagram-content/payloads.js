@@ -27,7 +27,7 @@ for (const p of posts) {
     tiktokData: {
       privacyOption: 'PUBLIC_TO_EVERYONE', disableComment: false, disableDuet: false, disableStitch: false,
       commercialContentThirdParty: false, commercialContentOwnBrand: false, autoAddMusic: false,
-      ...(video ? {} : { title: p.title, photoCoverIndex: 0 }),
+      title: p.title || 'الباقيات الصالحات', ...(video ? {} : { photoCoverIndex: 0 }),
     },
   };
   if (video) info.videoThumbnailUrl = `${base}/${p.cover}`;
