@@ -3,210 +3,179 @@
 <head>
 <meta charset="utf-8">
 <style>
-  @font-face { font-family: "Amiri"; src: url(fonts/Amiri-Regular.ttf); font-weight: 400; }
   @font-face { font-family: "Amiri"; src: url(fonts/Amiri-Bold.ttf); font-weight: 700; }
   @font-face { font-family: "Amiri Quran"; src: url(fonts/AmiriQuran-Regular.ttf); }
-  @font-face { font-family: "Aref Ruqaa"; src: url(fonts/ArefRuqaa-Bold.ttf); font-weight: 700; }
-  @font-face { font-family: "Reem Kufi"; src: url(fonts/ReemKufi-SemiBold.ttf); font-weight: 600; }
-  @font-face { font-family: "Noto Naskh Arabic"; src: url(fonts/NotoNaskhArabic-Regular.ttf); }
+  @font-face { font-family: "Readex"; src: url(fonts/ReadexPro-Light.ttf); font-weight: 300; }
+  @font-face { font-family: "Readex"; src: url(fonts/ReadexPro-Medium.ttf); font-weight: 500; }
+  @font-face { font-family: "Readex"; src: url(fonts/ReadexPro-Bold.ttf); font-weight: 700; }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { width: 1080px; height: 1350px; overflow: hidden; background: #000; }
-
-  #card { position: relative; width: 1080px; height: 1350px; overflow: hidden;
-          background: var(--bg); color: var(--ink); }
+  html, body { background: #000; overflow: hidden; }
+  #card { position: relative; width: var(--w); height: var(--h); overflow: hidden; background: var(--base); color: var(--ink); }
   .layer { position: absolute; inset: 0; }
 
-  /* themes */
-  .fajr    { --bg: linear-gradient(180deg,#0b1533 0%,#1c2a58 38%,#4a4a78 62%,#b98275 84%,#f0c48e 100%);
-             --ink:#fdf6e7; --gold:#ecc782; --muted:#d9cdb8; }
-  .dhuhr   { --bg: radial-gradient(120% 80% at 50% 35%,#fffaf0 0%,#f5ecd9 60%,#e9dcc0 100%);
-             --ink:#1d3a2e; --gold:#b38534; --muted:#5d6b5f; }
-  .asr     { --bg: radial-gradient(130% 90% at 50% 20%,#fbe9c6 0%,#efcf98 55%,#dcab6b 100%);
-             --ink:#3f2612; --gold:#8b5a1f; --muted:#6b4a2a; }
-  .maghrib { --bg: linear-gradient(180deg,#141433 0%,#2c2552 32%,#5a3363 55%,#a84f66 76%,#ec9a5c 94%,#f6bd74 100%);
-             --ink:#fff3e3; --gold:#f5cb82; --muted:#e9d3c0; }
-  .isha    { --bg: radial-gradient(120% 90% at 50% 10%,#1a2a5c 0%,#0e1838 55%,#060b1e 100%);
-             --ink:#f4ead3; --gold:#d8b46a; --muted:#b9b2a2; }
+  /* palettes */
+  .fajr    { --base:#0e1530; --b1:#e79a8a; --b2:#3b4c9b; --b3:#f3c98f; --ink:#fbf4ea; --acc:#f3c98f; --soft:rgba(251,244,234,.68); --glass:rgba(255,255,255,.07); --line:rgba(243,201,143,.55); }
+  .dhuhr   { --base:#f3eee4; --b1:#b9cdb4; --b2:#e9d8b6; --b3:#d7e3d2; --ink:#16271f; --acc:#2f6b4f; --soft:rgba(22,39,31,.62); --glass:rgba(255,255,255,.45); --line:rgba(47,107,79,.45); }
+  .asr     { --base:#f1dcc4; --b1:#e2a074; --b2:#f6e3c6; --b3:#c97a5a; --ink:#2f1a10; --acc:#9a4a26; --soft:rgba(47,26,16,.62); --glass:rgba(255,248,238,.40); --line:rgba(154,74,38,.45); }
+  .maghrib { --base:#1c1230; --b1:#ef8a64; --b2:#7b3d78; --b3:#f2b36f; --ink:#fff2e6; --acc:#f6c08a; --soft:rgba(255,242,230,.70); --glass:rgba(255,255,255,.07); --line:rgba(246,192,138,.55); }
+  .isha    { --base:#05080f; --b1:#123a3a; --b2:#1c2450; --b3:#0f4a3c; --ink:#f1ead9; --acc:#d6b46c; --soft:rgba(241,234,217,.62); --glass:rgba(255,255,255,.05); --line:rgba(214,180,108,.5); }
 
-  #pattern { opacity: var(--pat, .07); }
-  .dhuhr #pattern, .asr #pattern { --pat: .10; }
+  .blob { position: absolute; border-radius: 50%; opacity: .9; }
+  #grain { opacity: .07; width: 100%; height: 100%; }
+  .dhuhr #grain, .asr #grain { opacity: .09; }
 
-  /* frame */
-  .frame { position: absolute; border: 2px solid var(--gold); border-radius: 6px; opacity: .75; }
-  .f1 { inset: 44px; }
-  .f2 { inset: 58px; border-width: 1px; opacity: .45; }
-  .corner { position: absolute; width: 44px; height: 44px; }
-  .corner svg { width: 100%; height: 100%; }
+  #arch { position: absolute; left: 0; }
+  #archGlass { position: absolute; background: var(--glass); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
 
-  /* content */
-  #content { position: absolute; left: 110px; right: 110px; top: 150px; bottom: 170px;
-             display: flex; flex-direction: column; align-items: center; justify-content: center;
-             text-align: center; }
-  .after { font-family: "Reem Kufi"; font-weight: 600; font-size: 30px; color: var(--muted);
-           letter-spacing: 1px; display: flex; align-items: center; gap: 14px; }
-  .after svg { width: 26px; height: 26px; }
-  .label { font-family: "Aref Ruqaa"; font-weight: 700; font-size: 84px; color: var(--gold);
-           line-height: 1.35; margin-top: 6px; }
-  .divider { display: flex; align-items: center; gap: 16px; margin: 26px 0 40px; width: 420px; }
-  .divider i { flex: 1; height: 1.5px; background: linear-gradient(90deg,transparent,var(--gold),transparent); }
-  .divider svg { width: 30px; height: 30px; }
-  #text { font-family: "Amiri"; font-weight: 700; line-height: 1.95; color: var(--ink); text-wrap: balance; }
-  #text.quran { font-family: "Amiri Quran"; font-weight: 400; line-height: 2.1; }
-  .orn { color: var(--gold); font-family: "Amiri Quran"; }
-  .note { margin-top: 30px; font-family: "Reem Kufi"; font-weight: 600; font-size: 30px; color: var(--ink);
-          border: 1.5px solid var(--gold); border-radius: 40px; padding: 6px 30px 10px; }
-  .source { margin-top: 34px; font-family: "Noto Naskh Arabic"; font-size: 32px; color: var(--muted); }
+  #content { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .pill { font-family: "Readex"; font-weight: 500; font-size: 26px; color: var(--ink); letter-spacing: .5px;
+          padding: 10px 26px 12px; border-radius: 99px; border: 1.5px solid var(--line); display: inline-flex; gap: 12px; align-items: center; }
+  .pill b { width: 9px; height: 9px; border-radius: 50%; background: var(--acc); display: inline-block; }
+  .label { font-family: "Readex"; font-weight: 700; font-size: 58px; color: var(--acc); margin-top: 34px; line-height: 1.3; }
+  .rule { width: 64px; height: 3px; border-radius: 3px; background: var(--acc); margin: 30px 0 44px; }
+  #text { font-family: "Amiri"; font-weight: 700; line-height: 1.85; color: var(--ink); text-wrap: balance; }
+  #text.quran { font-family: "Amiri Quran"; font-weight: 400; line-height: 2.05; }
+  #text .w { display: inline-block; white-space: pre; }
+  .orn { color: var(--acc); }
+  .note { margin-top: 34px; font-family: "Readex"; font-weight: 500; font-size: 26px; color: var(--base);
+          background: var(--acc); border-radius: 99px; padding: 8px 26px 10px; }
+  .source { margin-top: 30px; font-family: "Readex"; font-weight: 300; font-size: 27px; color: var(--soft); }
 
-  .fajr #text, .maghrib #text, .isha #text { text-shadow: 0 2px 18px rgba(0,0,0,.35); }
-  .fajr .source, .maghrib .source { color: var(--ink); opacity: .9; text-shadow: 0 1px 10px rgba(0,0,0,.45); }
+  .foot, .head { position: absolute; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center;
+          font-family: "Readex"; color: var(--soft); font-size: 24px; font-weight: 300; }
+  .foot .handle { font-weight: 500; color: var(--ink); direction: ltr; letter-spacing: .5px; }
+  .dots { display: flex; gap: 8px; }
+  .dots i { width: 22px; height: 4px; border-radius: 4px; background: var(--line); opacity: .5; }
+  .dots i.on { background: var(--acc); opacity: 1; width: 40px; }
 
-  /* sky elements */
-  .star { position: absolute; border-radius: 50%; background: #fff8e6; }
-  #sun { position: absolute; left: 50%; width: 520px; height: 520px; margin-left: -260px; border-radius: 50%;
-         background: radial-gradient(circle,rgba(255,236,190,.95) 0%,rgba(255,206,140,.55) 22%,rgba(255,180,120,.18) 48%,rgba(255,170,110,0) 70%); }
-  #moon { position: absolute; top: 120px; left: 140px; width: 110px; height: 110px; }
+  .spark { position: absolute; border-radius: 50%; background: var(--acc); }
 </style>
 </head>
 <body>
 <div id="card">
-  <svg id="pattern" class="layer" width="1080" height="1350">
-    <defs>
-      <pattern id="p8" width="135" height="135" patternUnits="userSpaceOnUse">
-        <g fill="none" stroke="var(--gold)" stroke-width="1.6" transform="translate(67.5 67.5)">
-          <rect x="-34" y="-34" width="68" height="68"/>
-          <rect x="-34" y="-34" width="68" height="68" transform="rotate(45)"/>
-          <circle r="14"/>
-          <path d="M-67.5 0H-48M48 0H67.5M0 -67.5V-48M0 48V67.5"/>
-        </g>
-      </pattern>
-      <radialGradient id="fade" cx="50%" cy="45%" r="60%">
-        <stop offset="0" stop-color="#fff" stop-opacity=".25"/>
-        <stop offset="1" stop-color="#fff" stop-opacity="1"/>
-      </radialGradient>
-      <mask id="m"><rect width="1080" height="1350" fill="url(#fade)"/></mask>
-    </defs>
-    <rect id="patrect" width="1080" height="1350" fill="url(#p8)" mask="url(#m)"/>
-  </svg>
+  <div id="blobs" class="layer"></div>
+  <div id="sparks" class="layer"></div>
+  <svg id="grain" class="layer"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
+  <div id="archGlass"></div>
+  <svg id="arch"><path id="archPath" fill="none" stroke="var(--line)" stroke-width="2"/><path id="archPath2" fill="none" stroke="var(--line)" stroke-width="1" opacity=".5"/></svg>
 
-  <div id="sky" class="layer"></div>
-  <div id="sun"></div>
-  <svg id="moon" viewBox="0 0 100 100" style="display:none">
-    <defs><filter id="glow"><feGaussianBlur stdDeviation="3"/></filter></defs>
-    <path d="M62 8a44 44 0 1 0 30 70A36 36 0 1 1 62 8z" fill="var(--gold)" filter="url(#glow)" opacity=".6"/>
-    <path d="M62 8a44 44 0 1 0 30 70A36 36 0 1 1 62 8z" fill="var(--gold)"/>
-  </svg>
-
-  <div class="frame f1"></div><div class="frame f2"></div>
-  <div id="corners"></div>
-
+  <svg id="crown" viewBox="-50 -50 100 100" style="position:absolute;width:64px;height:64px"><g fill="none" stroke="var(--acc)" stroke-width="3"><rect x="-26" y="-26" width="52" height="52"/><rect x="-26" y="-26" width="52" height="52" transform="rotate(45)"/><circle r="9" fill="var(--acc)" stroke="none"/></g></svg>
+  <div class="head" id="head"><span id="day"></span><span class="dots" id="dots"></span></div>
   <div id="content">
-    <div class="after" id="after"></div>
+    <div class="pill" id="pill"></div>
     <div class="label" id="label"></div>
-    <div class="divider" id="divider"><i></i><span id="dstar"></span><i></i></div>
+    <div class="rule" id="rule"></div>
     <div id="text"></div>
     <div class="note" id="note" style="display:none"></div>
     <div class="source" id="source"></div>
   </div>
+  <div class="foot" id="foot"><span class="handle">@baqiiyaat</span><span>الباقيات الصالحات</span></div>
 </div>
 
 <script>
-const STAR8 = c => `<svg viewBox="-50 -50 100 100"><g fill="${c}">
-  <rect x="-30" y="-30" width="60" height="60"/><rect x="-30" y="-30" width="60" height="60" transform="rotate(45)"/></g>
-  <circle r="12" fill="none" stroke="var(--bg-solid,#0000)" /></svg>`;
-
-let P = null, stars = [];
-function rnd(seed){ return () => (seed = (seed * 16807) % 2147483647) / 2147483647; }
 const clamp = (x,a=0,b=1)=>Math.max(a,Math.min(b,x));
 const ease = x => 1 - Math.pow(1 - clamp(x), 3);
 const win = (t,a,b)=>ease((t-a)/(b-a));
+function rnd(seed){ return () => (seed = (seed * 16807) % 2147483647) / 2147483647; }
+const ORDER = ['fajr','dhuhr','asr','maghrib','isha'];
+let P, W, H, words = [], sparks = [], blobs = [], archLen = 0;
 
-window.setup = async (post) => {
-  P = post;
+// mihrab arch: straight sides, pointed top
+function archD(x, y, w, h) {
+  const r = w / 2, sh = y + r * 1.05;
+  return `M${x} ${y+h} V${sh} C${x} ${sh - r*0.62} ${x + r*0.55} ${y + r*0.18} ${x + r} ${y} ` +
+         `C${x + r*1.45} ${y + r*0.18} ${x + w} ${sh - r*0.62} ${x + w} ${sh} V${y+h} Z`;
+}
+
+window.setup = async (post, day, vertical) => {
+  P = post; W = 1080; H = vertical ? 1920 : 1350;
   const card = document.getElementById('card');
   card.className = post.theme;
-  const gold = getComputedStyle(card).getPropertyValue('--gold').trim();
+  card.style.setProperty('--w', W + 'px'); card.style.setProperty('--h', H + 'px');
 
-  document.getElementById('after').innerHTML = `${STAR8(gold)}<span>بعد صلاة ${post.prayer}</span>${STAR8(gold)}`;
+  const aw = 840, ax = (W - aw) / 2;
+  const ay = vertical ? 270 : 140, ah = vertical ? 1290 : 1090;
+  const svg = document.getElementById('arch');
+  svg.setAttribute('width', W); svg.setAttribute('height', H);
+  document.getElementById('archPath').setAttribute('d', archD(ax, ay, aw, ah));
+  document.getElementById('archPath2').setAttribute('d', archD(ax + 18, ay + 24, aw - 36, ah - 42));
+  archLen = document.getElementById('archPath').getTotalLength();
+  Object.assign(document.getElementById('archGlass').style, { left: ax + 'px', top: ay + 'px', width: aw + 'px', height: ah + 'px',
+    clipPath: `path('${archD(0, 0, aw, ah)}')` });
+
+  Object.assign(document.getElementById('crown').style, { left: (W/2 - 32) + 'px', top: (ay + aw*0.17) + 'px' });
+  const c = document.getElementById('content');
+  const ct = ay + aw * 0.30;
+  Object.assign(c.style, { left: (ax + 60) + 'px', top: ct + 'px', width: (aw - 120) + 'px', height: (ay + ah - ct - 40) + 'px' });
+  Object.assign(document.getElementById('head').style, { top: (vertical ? 170 : 58) + 'px', padding: '0 120px' });
+  Object.assign(document.getElementById('foot').style, { bottom: (vertical ? 300 : 52) + 'px', padding: '0 120px' });
+
+  document.getElementById('day').textContent = day;
+  document.getElementById('dots').innerHTML = ORDER.map(o => `<i class="${o===post.theme?'on':''}"></i>`).join('');
+  document.getElementById('pill').innerHTML = `<b></b>بعد صلاة ${post.prayer}`;
   document.getElementById('label').textContent = post.label;
-  document.getElementById('dstar').innerHTML = STAR8(gold);
-  const tx = document.getElementById('text');
-  if (post.font === 'quran') { tx.className = 'quran'; const w = post.text.split(' '); const last = w.pop(), first = w.shift();
-    tx.innerHTML = `<span style="white-space:nowrap"><span class="orn">﴿</span>${first}</span> ${w.join(' ')} <span style="white-space:nowrap">${last}<span class="orn">﴾</span></span>`; }
-  else { tx.className = ''; const w = post.text.split(' '); const last = w.pop(), first = w.shift();
-    tx.innerHTML = `<span style="white-space:nowrap"><span class="orn">«</span>${first}</span> ${w.join(' ')} <span style="white-space:nowrap">${last}<span class="orn">»</span></span>`; }
   const note = document.getElementById('note');
-  if (post.note) { note.style.display = ''; note.textContent = post.note; }
+  note.style.display = post.note ? '' : 'none'; note.textContent = post.note || '';
   document.getElementById('source').textContent = post.source;
 
-  // corners
-  const cs = [[38,38],[38,null],[null,38],[null,null]];
-  document.getElementById('corners').innerHTML = cs.map(([t,l]) =>
-    `<div class="corner" style="${t!==null?'top:30px;':'bottom:30px;'}${l!==null?'left:30px;':'right:30px;'}">${STAR8(gold)}</div>`).join('');
+  const tx = document.getElementById('text');
+  tx.className = post.font === 'quran' ? 'quran' : '';
+  const [o, cl] = post.font === 'quran' ? ['﴿', '﴾'] : ['«', '»'];
+  const ws = post.text.split(' ').reduce((a, w) => (/^[\u06D6-\u06DC]$/.test(w) && a.length ? (a[a.length-1] += ' ' + w) : a.push(w), a), []);
+  tx.innerHTML = ws.map((w, i) => `<span class="w">${i===0?`<span class="orn">${o}</span>`:''}${w}${i===ws.length-1?`<span class="orn">${cl}</span>`:''}</span>`).join(' ');
+  words = [...tx.querySelectorAll('.w')];
 
-  // sky
-  const sky = document.getElementById('sky'); sky.innerHTML = ''; stars = [];
-  if (['fajr','maghrib','isha'].includes(post.theme)) {
-    const r = rnd(post.theme.length * 7919 + 13);
-    const n = post.theme === 'isha' ? 90 : 70, maxY = post.theme === 'isha' ? 1300 : 760;
-    for (let i = 0; i < n; i++) {
-      const s = document.createElement('div'); s.className = 'star';
-      const size = 1.5 + r() * 3.2, x = 70 + r()*940, y = 70 + r()*maxY;
-      if (x > 110 && x < 970 && y > 330 && y < 1020) { i--; continue; }  // keep stars off the text
-      Object.assign(s.style, { left: x+'px', top: y+'px', width: size+'px', height: size+'px' });
-      sky.appendChild(s); stars.push({ el: s, ph: r()*6.28, sp: .6 + r()*1.6, delay: r() });
-    }
+  const r = rnd(ORDER.indexOf(post.theme) * 97 + 7);
+  const bl = document.getElementById('blobs'); bl.innerHTML = ''; blobs = [];
+  ['--b1','--b2','--b3','--b1'].forEach((v, i) => {
+    const b = document.createElement('div'); b.className = 'blob';
+    const s = 900 + r() * 500;
+    Object.assign(b.style, { width: s+'px', height: s+'px', background: `radial-gradient(circle, var(${v}) 0%, transparent 68%)` });
+    bl.appendChild(b);
+    blobs.push({ el: b, x: r()*W - s/2, y: (i/3)*H - s/2 + r()*200, s, ph: r()*6.28, sp: .15 + r()*.2 });
+  });
+  const sp = document.getElementById('sparks'); sp.innerHTML = ''; sparks = [];
+  const dark = ['fajr','maghrib','isha'].includes(post.theme);
+  for (let i = 0; i < (dark ? 46 : 26); i++) {
+    const e = document.createElement('div'); e.className = 'spark';
+    const s = 2 + r() * 4; Object.assign(e.style, { width: s+'px', height: s+'px' });
+    sp.appendChild(e); sparks.push({ el: e, x: r()*W, y: r()*H, v: 12 + r()*30, ph: r()*6.28 });
   }
-  const sun = document.getElementById('sun');
-  sun.style.display = ['fajr','maghrib'].includes(post.theme) ? '' : 'none';
-  document.getElementById('moon').style.display = ['maghrib','isha'].includes(post.theme) ? '' : 'none';
-  if (post.theme === 'isha') Object.assign(document.getElementById('moon').style, { top:'110px', left:'130px' });
 
   await document.fonts.ready;
-  // fit text
-  let fs = 84; tx.style.fontSize = fs + 'px';
-  const content = document.getElementById('content');
-  const limitH = content.clientHeight;
-  const fullH = () => [...content.children].reduce((h,c)=>h + (c.offsetParent? c.offsetHeight:0), 0) + 140;
-  while (fs > 38 && fullH() > limitH) { fs -= 2; tx.style.fontSize = fs + 'px'; }
+  let fs = vertical ? 80 : 74; tx.style.fontSize = fs + 'px';
+  const fits = () => [...c.children].reduce((h, e) => h + (e.offsetParent ? e.offsetHeight : 0), 0) + 150 < c.clientHeight;
+  while (fs > 36 && !fits()) { fs -= 2; tx.style.fontSize = fs + 'px'; }
 };
 
-// t in seconds; T = total duration. For stills call setT(T, T).
 window.setT = (t, T) => {
-  const th = P.theme, still = t >= T;
-  const parts = ['after','label','divider','text','note','source'].map(id=>document.getElementById(id));
-  const starts = [0.4, 0.9, 1.6, 2.1, 3.6, 3.9];
-  parts.forEach((el,i) => {
-    const k = still ? 1 : win(t, starts[i], starts[i] + (i===3 ? 1.6 : 0.9));
-    el.style.opacity = k;
-    el.style.transform = `translateY(${(1-k)*24}px)`;
-    el.style.filter = i===3 && k<1 ? `blur(${(1-k)*6}px)` : '';
+  const still = t >= T;
+  blobs.forEach(b => {
+    const dx = Math.sin(t*b.sp + b.ph) * 90, dy = Math.cos(t*b.sp*0.8 + b.ph) * 70;
+    b.el.style.transform = `translate(${b.x + dx}px, ${b.y + dy}px)`;
   });
-  // divider grows
-  document.getElementById('divider').style.width = (still?420: 120 + 300*win(t,1.6,2.8)) + 'px';
+  sparks.forEach(s => {
+    const y = ((s.y - t * s.v) % H + H) % H;
+    s.el.style.transform = `translate(${s.x + Math.sin(t*.6 + s.ph)*14}px, ${y}px)`;
+    s.el.style.opacity = (.25 + .35 * (0.5 + 0.5*Math.sin(t*1.7 + s.ph))) * (still ? 1 : win(t, 0, 1.5));
+  });
 
-  // pattern drift
-  document.getElementById('patrect').setAttribute('transform', `translate(${(t*4)%135} ${(t*2)%135})`);
+  const a = still ? 1 : win(t, 0.1, 2.4);
+  ['archPath','archPath2'].forEach(id => { const p = document.getElementById(id);
+    p.style.strokeDasharray = archLen; p.style.strokeDashoffset = archLen * (1 - a); });
+  document.getElementById('archGlass').style.opacity = still ? 1 : win(t, 0.8, 2.6);
 
-  const sun = document.getElementById('sun');
-  const moon = document.getElementById('moon');
-  if (th === 'fajr') {
-    const k = still ? 1 : win(t, 0, 7);
-    sun.style.top = (1350 - 120 - 200*k) + 'px';
-    sun.style.opacity = .55 + .45*k;
-    stars.forEach(s => s.el.style.opacity = (1 - (still?1:clamp(t/8)) * .85) * (.55 + .45*Math.sin(t*s.sp*2 + s.ph)));
-  } else if (th === 'maghrib') {
-    const k = still ? 1 : win(t, 0, 7);
-    sun.style.top = (1350 - 330 + 210*k) + 'px';
-    sun.style.opacity = 1 - .35*k;
-    stars.forEach(s => { const a = still ? 1 : clamp((t - s.delay*5)/1.5);
-      s.el.style.opacity = a * (.5 + .45*Math.sin(t*s.sp*2 + s.ph)); });
-    const m = still ? 1 : win(t, 1, 4);
-    moon.style.opacity = m; moon.style.transform = `translateY(${(1-m)*30}px)`;
-  } else if (th === 'isha') {
-    stars.forEach(s => s.el.style.opacity = .45 + .45*Math.sin(t*s.sp*2 + s.ph));
-    moon.style.opacity = 1;
-  }
+  const fade = (id, a0, a1) => { const k = still ? 1 : win(t, a0, a1); const e = document.getElementById(id);
+    e.style.opacity = k; e.style.transform = `translateY(${(1-k)*18}px)`; };
+  fade('head', 0.3, 1.2); fade('crown', 1.6, 2.6); fade('foot', 0.3, 1.2);
+  fade('pill', 1.0, 1.8); fade('label', 1.3, 2.2);
+  document.getElementById('rule').style.width = (still ? 64 : 64 * win(t, 1.8, 2.6)) + 'px';
+  const w0 = 2.4, per = Math.min(0.32, 4.2 / Math.max(words.length, 1));
+  words.forEach((w, i) => { const k = still ? 1 : win(t, w0 + i*per, w0 + i*per + 0.7);
+    w.style.opacity = k; w.style.transform = `translateY(${(1-k)*14}px)`; w.style.filter = k < 1 ? `blur(${(1-k)*5}px)` : ''; });
+  const end = w0 + words.length*per + 0.4;
+  fade('note', end, end + 0.8); fade('source', end + 0.3, end + 1.1);
 };
 </script>
 </body>

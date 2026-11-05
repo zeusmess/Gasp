@@ -21,7 +21,9 @@ async function main() {
   for (const post of day.posts) {
     if (only && post.id !== only) continue;
     const base = path.join(outDir, `${post.time.replace(':', '')}-${post.id}`);
-    await page.evaluate(p => window.setup(p), post);
+    const vertical = post.kind === 'video';
+    await page.setViewportSize({ width: 1080, height: vertical ? 1920 : 1350 });
+    await page.evaluate(([p, d, v]) => window.setup(p, d, v), [post, day.label, vertical]);
     fs.writeFileSync(base + '.txt', post.caption + '\n');
 
     if (post.kind === 'image') {
