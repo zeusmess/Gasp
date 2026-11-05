@@ -107,9 +107,9 @@ async function fetchAudio(file, cache) {
   const p = path.join(cache, file);
   if (fs.existsSync(p) && fs.statSync(p).size > 1000) return p;
   try {
-    const r = await fetch(AUDIO_URL(file), { signal: AbortSignal.timeout(30000) });
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    fs.writeFileSync(p, Buffer.from(await r.arrayBuffer()));
+    // curl honours the environment's HTTPS proxy settings (Node's fetch does not)
+    execFileSync('curl', ['-sSf', '--max-time', '60', '--retry', '3', '-o', p, AUDIO_URL(file)]);
+    if (fs.statSync(p).size < 1000) throw new Error('file too small');
     return p;
   } catch (e) { console.warn('audio unavailable', file, e.message); return null; }
 }
