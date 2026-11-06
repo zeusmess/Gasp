@@ -16,25 +16,23 @@ for (const p of posts) {
   const when = new Date(`${date}T${p.time}:00+02:00`);  // Cairo is UTC+2 all through Nov–Dec 2026
   if (when.getTime() < now + 3 * 60e3) { console.error(`skip ${p.id}: ${p.time} already passed`); continue; }
   const video = p.kind === 'video';
+  const common = { autoPublish: true, draft: false, descendants: [], firstCommentText: '', hasNotReadNotes: false,
+    shortener: false, smartLinkData: { ids: [] }, mediaAltText: [],
+    publicationDate: { dateTime: `${date}T${p.time}:00`, timezone: 'Africa/Cairo' } };
+  const tiktokData = extra => ({ privacyOption: 'PUBLIC_TO_EVERYONE', disableComment: false, disableDuet: false, disableStitch: false,
+    commercialContentThirdParty: false, commercialContentOwnBrand: false, autoAddMusic: false, title: p.title || 'الباقيات الصالحات', ...extra });
+  const entry = (id, info) => out.push({ id, time: p.time, audio: p.audio, blogId: '7891780', date: `${date}T${p.time}:00+02:00`, info });
   if (p.kind === 'story') {
-    // Instagram Story only: a Story published on its own must not carry text
-    out.push({ id: p.id, time: p.time, blogId: '7891780', date: `${date}T${p.time}:00+02:00`, info: {
-      autoPublish: true, draft: false, descendants: [], firstCommentText: '', hasNotReadNotes: false, shortener: false,
-      smartLinkData: { ids: [] }, media: [`${base}/${p.file}`], mediaAltText: [], providers: [{ network: 'instagram' }],
-      publicationDate: { dateTime: `${date}T${p.time}:00`, timezone: 'Africa/Cairo' }, instagramData: { type: 'STORY' } } });
+    // Instagram Story (a Story on its own carries no text); the same image as a TikTok photo post
+    entry(p.id + '-instagram', { ...common, media: [`${base}/${p.file}`], providers: [{ network: 'instagram' }], instagramData: { type: 'STORY' } });
+    entry(p.id + '-tiktok', { ...common, media: [`${base}/${p.file}`], providers: [{ network: 'tiktok' }], text: p.caption, tiktokData: tiktokData({ photoCoverIndex: 0 }) });
     continue;
   }
   if (p.kind === 'dual') {
-    // Instagram: the image as a feed post. TikTok: the same design as a video with a recitation.
-    const common = { autoPublish: true, draft: false, descendants: [], firstCommentText: '', hasNotReadNotes: false,
-      shortener: false, smartLinkData: { ids: [] }, mediaAltText: [],
-      publicationDate: { dateTime: `${date}T${p.time}:00`, timezone: 'Africa/Cairo' } };
-    out.push({ id: p.id + '-instagram', time: p.time, blogId: '7891780', date: `${date}T${p.time}:00+02:00`, info: {
-      ...common, media: [`${base}/${p.file}`], providers: [{ network: 'instagram' }], text: p.caption, instagramData: { type: 'POST' } } });
-    out.push({ id: p.id + '-tiktok', time: p.time, audio: p.audio, blogId: '7891780', date: `${date}T${p.time}:00+02:00`, info: {
-      ...common, media: [`${base}/${p.tiktokFile}`], videoThumbnailUrl: `${base}/${p.tiktokCover}`, providers: [{ network: 'tiktok' }],
-      text: p.tiktokCaption, tiktokData: { privacyOption: 'PUBLIC_TO_EVERYONE', disableComment: false, disableDuet: false, disableStitch: false,
-        commercialContentThirdParty: false, commercialContentOwnBrand: false, autoAddMusic: false, title: p.title } } });
+    // the same video with a recitation on both: an Instagram Reel and a TikTok video
+    entry(p.id, { ...common, media: [`${base}/${p.tiktokFile}`], videoThumbnailUrl: `${base}/${p.tiktokCover}`,
+      providers: [{ network: 'instagram' }, { network: 'tiktok' }], text: p.tiktokCaption,
+      instagramData: { type: 'REEL', showReelOnFeed: true }, tiktokData: tiktokData({}) });
     continue;
   }
   const info = {

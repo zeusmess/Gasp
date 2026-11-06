@@ -3,13 +3,14 @@
 Runs once a day (early morning, Cairo time) until 2026-12-04. The series started
 2026-11-05; Nov 5–6 were built by hand.
 
-Each day: 2 Reels, 4 images and 5 Instagram Stories.
+Each day Instagram and TikTok get the same posts at the same times; only the prayer duas differ
+(Instagram Story, TikTok photo post).
 
-| time | post | where |
-|---|---|---|
-| 10:00 and 18:00 | Reel with Sheikh al-Minshawi's recitation | Instagram + TikTok |
-| sunrise+10, 09:00, sunset-20, 20:00 | image (morning dhikr, hadith, ayah, dua from the Quran) | Instagram post; on TikTok the same design as a video with a recitation (reciters take turns) |
-| after each of the 5 prayers | dua / dhikr image | Instagram Story |
+| time | post | Instagram | TikTok |
+|---|---|---|---|
+| 10:00 and 18:00 | Reel with Sheikh al-Minshawi's recitation | Reel | same video |
+| sunrise+10, 09:00, sunset-20, 20:00 | design (morning dhikr, hadith, ayah, dua from the Quran) with a recitation, reciters taking turns | Reel | same video |
+| after each of the 5 prayers | dua / dhikr image | Story | photo post |
 
 ## Steps
 
