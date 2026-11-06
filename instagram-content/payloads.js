@@ -25,7 +25,7 @@ for (const p of posts) {
   if (p.kind === 'story') {
     // Instagram Story (a Story on its own carries no text); the same image as a TikTok photo post
     entry(p.id + '-instagram', { ...common, media: [`${base}/${p.file}`], providers: [{ network: 'instagram' }], instagramData: { type: 'STORY' } });
-    entry(p.id + '-tiktok', { ...common, media: [`${base}/${p.file}`], providers: [{ network: 'tiktok' }], text: p.caption, tiktokData: tiktokData({ photoCoverIndex: 0 }) });
+    entry(p.id + '-tiktok', { ...common, media: [`${base}/${p.jpg || p.file.replace(/\.png$/, '.jpg')}`], providers: [{ network: 'tiktok' }], text: p.caption, tiktokData: tiktokData({ photoCoverIndex: 0 }) });
     continue;
   }
   if (p.kind === 'dual') {

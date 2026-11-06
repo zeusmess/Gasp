@@ -203,7 +203,8 @@ async function buildImage(page, plan, post, base) {
   await page.evaluate(([p, d, v]) => window.setup(p, d, v), [{ theme: post.theme, pill: post.pill, prayer: '', ...card }, plan.label, post.kind === 'story']);
   await page.evaluate(() => window.setT(99, 99));
   await page.screenshot({ path: base + '.png' });
-  return { caption, file: path.basename(base) + '.png', title, card };
+  await page.screenshot({ path: base + '.jpg', type: 'jpeg', quality: 95 });  // TikTok photo posts accept only JPEG/WebP
+  return { caption, file: path.basename(base) + '.png', jpg: path.basename(base) + '.jpg', title, card };
 }
 
 // TikTok version of a feed image: the vertical design, gently moving, with a recitation underneath
