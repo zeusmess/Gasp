@@ -1,6 +1,6 @@
 # Daily task: build and schedule today's posts for @baqiiyaat (Instagram + TikTok)
 
-Runs once a day (early morning, Cairo time) until 2026-12-04. The series started
+Runs once a day (early morning, Cairo time) until 2026-12-31. The series started
 2026-11-05; Nov 5–6 were built by hand.
 
 Each day Instagram and TikTok get the same posts at the same times; only the prayer duas differ
@@ -22,7 +22,7 @@ Each day Instagram and TikTok get the same posts at the same times; only the pra
    already scheduled in Metricool (check `getScheduledPosts` for brand 7891780 on that date),
    stop: the day is done.
 3. **Build.** `cd instagram-content && npm install --silent && node build_day.js $D` (about 10–15 minutes).
-   Exit code 4 means the series has not started yet, exit code 3 means it is over: report that and stop.
+   Exit code 4 means the series has not started yet, exit code 3 means it is over (after 2026-12-31): report that and stop.
    Note in the report any line saying `audio unavailable` (the Reel was rendered silent,
    usually because `everyayah.com` is not in the environment's allowed network domains).
 4. **Push.** `git add instagram-content/out/$D && git commit -m "Daily posts for $D"` and

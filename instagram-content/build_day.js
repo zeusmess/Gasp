@@ -18,7 +18,7 @@ const adhan = require('adhan');
 const { AYAT, FRIDAY, ADHKAR, QDUAS, HADITH } = require('./plan-data');
 const { verse, surahName, BASMALA, forFont } = require('./lib-quran');
 
-const START = '2026-11-05', END = '2026-12-04';
+const START = '2026-11-05', END = '2026-12-31';
 const TZ = 'Africa/Cairo';
 const FPS = 30, INTRO = 0.3, OUTRO = 1.8;
 const RECITER = 'Minshawy_Murattal_128kbps';
