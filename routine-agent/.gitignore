@@ -1,0 +1,6 @@
+# Your personal data stays on your machine
+exports/
+journal/
+.env
+__pycache__/
+.venv/
