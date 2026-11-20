@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: "Amiri"; src: url(fonts/Amiri-Bold.ttf); font-weight: 700; }
+  @font-face { font-family: "Amiri Quran"; src: url(fonts/AmiriQuran-Regular.ttf); }
+  @font-face { font-family: "Ruqaa"; src: url(fonts/ArefRuqaa-Bold.ttf); font-weight: 700; }
+  @font-face { font-family: "Readex"; src: url(fonts/ReadexPro-Light.ttf); font-weight: 300; }
+  @font-face { font-family: "Readex"; src: url(fonts/ReadexPro-Medium.ttf); font-weight: 500; }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; overflow: hidden; }
+  :root { --gold1:#fff4cf; --gold2:#e9c46a; --gold3:#b8862b; --ink:#fbf5e6; --soft:rgba(251,245,230,.72); }
+  #stage { position: relative; width: var(--w); height: var(--h); overflow: hidden;
+    background: radial-gradient(120% 80% at 50% 0%, #0f3b31 0%, #06201a 45%, #020d0a 100%); color: var(--ink); }
+  .layer { position: absolute; inset: 0; }
+
+  /* golden bokeh orbs */
+  .orb { position: absolute; border-radius: 50%; filter: blur(60px); will-change: transform; }
+  #o1 { width: 620px; height: 620px; background: radial-gradient(circle, rgba(233,196,106,.55), rgba(233,196,106,0) 70%); }
+  #o2 { width: 520px; height: 520px; background: radial-gradient(circle, rgba(32,140,110,.65), rgba(32,140,110,0) 70%); }
+  #o3 { width: 440px; height: 440px; background: radial-gradient(circle, rgba(255,226,160,.45), rgba(255,226,160,0) 70%); }
+
+  /* fine gold lattice */
+  #lattice { opacity: .10; }
+  /* dome + minarets silhouette */
+  #skyline { top: auto; height: 42%; opacity: .55; }
+  #dust i { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #ffe7a6; box-shadow: 0 0 10px 2px rgba(255,220,140,.8); }
+
+  /* the glass slab */
+  #glass { position: absolute; border-radius: 64px; overflow: hidden;
+    background: linear-gradient(155deg, rgba(255,255,255,.17) 0%, rgba(255,255,255,.06) 45%, rgba(255,255,255,.03) 100%);
+    backdrop-filter: blur(34px) saturate(170%); -webkit-backdrop-filter: blur(34px) saturate(170%);
+    box-shadow: 0 50px 120px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.35), inset 0 -1px 0 rgba(255,255,255,.06); }
+  #glass::before { content: ""; position: absolute; inset: 0; border-radius: 64px; padding: 2.5px;
+    background: conic-gradient(from 210deg, #fff4cf, #b8862b, #e9c46a, #6b4a12, #fff0c0, #c99a3e, #fff4cf);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+  #glass::after { content: ""; position: absolute; left: -10%; top: -30%; width: 80%; height: 60%;
+    background: radial-gradient(ellipse at center, rgba(255,255,255,.22), rgba(255,255,255,0) 65%); pointer-events: none; }
+  #sheen { position: absolute; top: -20%; width: 32%; height: 140%; transform: rotate(18deg);
+    background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,246,214,.20), rgba(255,255,255,0)); }
+  /* inner frame */
+  #frame { position: absolute; inset: 26px; border-radius: 44px; border: 1px solid rgba(233,196,106,.28); }
+  .corner { position: absolute; width: 90px; height: 90px; opacity: .9; }
+
+  .foil { background: linear-gradient(100deg, #b8862b 0%, #fff4cf 22%, #e9c46a 40%, #fff7da 55%, #c99a3e 75%, #fff0c0 100%);
+    background-size: 220% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  #content { position: absolute; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  #badge { display: inline-flex; align-items: center; gap: 14px; padding: 14px 34px; border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.05)); border: 1px solid rgba(233,196,106,.55);
+    font: 500 30px "Readex"; color: var(--gold1); letter-spacing: .5px; backdrop-filter: blur(10px); }
+  #badge b { width: 9px; height: 9px; border-radius: 50%; background: var(--gold2); box-shadow: 0 0 12px var(--gold2); }
+  #title { font: 700 104px/1.25 "Ruqaa"; margin-top: 34px; filter: drop-shadow(0 6px 18px rgba(0,0,0,.45)); }
+  #sub { font: 300 34px/1.6 "Readex"; color: var(--soft); margin-top: 8px; }
+  #rule { display: flex; align-items: center; gap: 18px; margin: 38px 0 34px; }
+  #rule span { width: 150px; height: 1.5px; background: linear-gradient(90deg, rgba(233,196,106,0), var(--gold2)); }
+  #rule span:last-child { transform: scaleX(-1); }
+  #text { font: 700 54px/1.95 "Amiri"; color: var(--ink); text-shadow: 0 3px 16px rgba(0,0,0,.45); }
+  #text.quran { font-family: "Amiri Quran"; font-weight: 400; line-height: 2.25; }
+  #text .w { display: inline-block; }
+  #source { font: 500 28px "Readex"; color: var(--gold2); margin-top: 26px; opacity: .95; }
+  #note { white-space: pre-line; font: 300 30px/1.6 "Readex"; color: var(--soft); margin-top: 18px; }
+  #salawat { position: absolute; left: 0; right: 0; text-align: center; font: 700 44px "Amiri"; }
+  #handle { position: absolute; left: 0; right: 0; display: flex; justify-content: center; gap: 22px; align-items: center;
+    font: 500 26px "Readex"; color: rgba(251,245,230,.78); }
+  #handle .chip { padding: 10px 26px; border-radius: 999px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="layer" id="orbs"><div class="orb" id="o1"></div><div class="orb" id="o2"></div><div class="orb" id="o3"></div></div>
+  <svg class="layer" id="lattice"></svg>
+  <svg class="layer" id="skyline"></svg>
+  <div class="layer" id="dust"></div>
+  <div id="glass">
+    <div id="sheen"></div>
+    <div id="frame"></div>
+  </div>
+  <div id="content">
+    <div id="badge"><b></b><span id="badgeText">يوم الجمعة</span><b></b></div>
+    <div id="title" class="foil"></div>
+    <div id="sub"></div>
+    <div id="rule"><span></span>
+      <svg width="46" height="46" viewBox="-50 -50 100 100"><path id="starp" fill="#e9c46a"/></svg><span></span></div>
+    <div id="text"></div>
+    <div id="source"></div>
+    <div id="note"></div>
+  </div>
+  <div id="salawat" class="foil">اللّٰهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّدٍ ﷺ</div>
+  <div id="handle"><span class="chip" dir="ltr">@baqiiyaat</span><span>الباقيات الصالحات</span></div>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const star = r => { let d = ''; for (let i = 0; i < 16; i++) { const a = Math.PI * i / 8 - Math.PI / 2, rr = i % 2 ? r * .62 : r; d += (i ? 'L' : 'M') + (rr * Math.cos(a)).toFixed(1) + ' ' + (rr * Math.sin(a)).toFixed(1); } return d + 'Z'; };
+let W, H, SEGS = [], DUST = [];
+function rnd(s) { return () => (s = (s * 9301 + 49297) % 233280) / 233280; }
+
+window.setup = function (opts) {
+  W = 1080; H = opts.vertical ? 1920 : 1350;
+  const st = $('stage'); st.style.setProperty('--w', W + 'px'); st.style.setProperty('--h', H + 'px');
+  // lattice of 8-point stars
+  let g = ''; const step = 120;
+  for (let y = -step; y < H + step; y += step) for (let x = -step; x < W + step; x += step) {
+    const ox = (Math.round(y / step) % 2) * step / 2;
+    g += `<path d="${star(26)}" transform="translate(${x + ox} ${y})" fill="none" stroke="#e9c46a" stroke-width="1.2"/>`;
+  }
+  $('lattice').setAttribute('viewBox', `0 0 ${W} ${H}`); $('lattice').innerHTML = g;
+  // skyline: central dome with two minarets
+  const sh = H * .42, sk = $('skyline'); sk.setAttribute('viewBox', `0 0 ${W} ${sh}`); sk.style.height = sh + 'px'; sk.style.top = (H - sh) + 'px';
+  const base = sh, cx = W / 2;
+  sk.innerHTML = `<defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0e2f27" stop-opacity=".0"/><stop offset=".35" stop-color="#0a2620"/><stop offset="1" stop-color="#020b08"/></linearGradient>
+    <linearGradient id="se" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9c46a" stop-opacity=".8"/><stop offset="1" stop-color="#e9c46a" stop-opacity="0"/></linearGradient></defs>
+    <path fill="url(#sg)" stroke="url(#se)" stroke-width="2" d="M0 ${base} L0 ${base*.62} L${cx-330} ${base*.62} L${cx-330} ${base*.2} L${cx-318} ${base*.12} L${cx-306} ${base*.2} L${cx-306} ${base*.62}
+      L${cx-210} ${base*.62} C${cx-210} ${base*.28} ${cx-120} ${base*.16} ${cx} ${base*.08} C${cx+120} ${base*.16} ${cx+210} ${base*.28} ${cx+210} ${base*.62}
+      L${cx+306} ${base*.62} L${cx+306} ${base*.2} L${cx+318} ${base*.12} L${cx+330} ${base*.2} L${cx+330} ${base*.62} L${W} ${base*.62} L${W} ${base} Z"/>
+    <path d="M${cx} ${base*.08} L${cx} ${base*.0+6}" stroke="#e9c46a" stroke-width="3"/>
+    <path d="M${cx+9} ${4} a12 12 0 1 1 -10 -2 a9 9 0 1 0 10 2" fill="#e9c46a"/>`;
+  // glass slab geometry
+  const gx = 70, gw = W - 140, gy = opts.vertical ? 260 : 120, gh = opts.vertical ? 1240 : 1000;
+  Object.assign($('glass').style, { left: gx + 'px', top: gy + 'px', width: gw + 'px', height: gh + 'px' });
+  Object.assign($('content').style, { left: (gx + 70) + 'px', width: (gw - 140) + 'px', top: (gy + 80) + 'px', height: (gh - 160) + 'px', justifyContent: 'center' });
+  $('salawat').style.top = (gy + gh + (opts.vertical ? 60 : 36)) + 'px';
+  $('salawat').style.display = opts.salawat === false ? 'none' : '';
+  $('handle').style.top = (H - (opts.vertical ? 150 : 86)) + 'px';
+  $('starp').setAttribute('d', star(40));
+  // dust
+  const r = rnd(42); DUST = []; let dh = '';
+  for (let i = 0; i < 26; i++) { DUST.push({ x: r() * W, y: r() * H, s: .5 + r(), p: r() * 6.28 }); dh += '<i></i>'; }
+  $('dust').innerHTML = dh;
+  SEGS = opts.segments || [opts];
+  show(SEGS[0]);
+  window.setT(opts.vertical ? 0 : 99);
+};
+
+function fit(seg) {
+  const t = $('text'); let fs = seg.fs || 60; t.style.fontSize = fs + 'px';
+  const box = $('content'), max = box.clientHeight;
+  while (box.scrollHeight > max && fs > 30) { fs -= 2; t.style.fontSize = fs + 'px'; }
+}
+let cur = null;
+function show(seg) {
+  if (cur === seg) return; cur = seg;
+  $('badgeText').textContent = seg.badge || 'يوم الجمعة';
+  $('title').textContent = seg.title || ''; $('title').style.display = seg.title ? '' : 'none';
+  $('title').style.fontSize = (seg.titleSize || 104) + 'px';
+  $('sub').textContent = seg.sub || ''; $('sub').style.display = seg.sub ? '' : 'none';
+  const t = $('text'); t.className = seg.quran ? 'quran' : '';
+  const txt = seg.quran ? '﴿' + seg.text + '﴾' : (seg.text || '');
+  t.innerHTML = txt.split(/\s+/).map(w => `<span class="w">${w}</span>`).join(' ');
+  t.style.display = seg.text ? '' : 'none'; $('rule').style.display = seg.text ? '' : 'none';
+  $('source').textContent = seg.source || ''; $('note').textContent = seg.note || '';
+  fit(seg);
+}
+const ease = x => 1 - Math.pow(1 - Math.min(1, Math.max(0, x)), 3);
+window.setT = function (t) {
+  // background motion
+  const o = [[.15, .12, 1], [.85, .55, 1.3], [.35, .9, .8]];
+  ['o1', 'o2', 'o3'].forEach((id, i) => { const [x, y, sp] = o[i];
+    $(id).style.transform = `translate(${x * W - 300 + 60 * Math.sin(t * .35 * sp + i)}px, ${y * H - 300 + 50 * Math.cos(t * .3 * sp + i * 2)}px)`; });
+  [...$('dust').children].forEach((el, i) => { const d = DUST[i];
+    el.style.transform = `translate(${d.x + 14 * Math.sin(t * .5 + d.p)}px, ${(d.y - t * 12 * d.s + H * 2) % H}px)`; el.style.opacity = .35 + .45 * Math.sin(t * 1.3 * d.s + d.p) ** 2; });
+  const gw = parseFloat($('glass').style.width);
+  $('sheen').style.left = (((t * 0.22) % 1.6) * gw * 1.4 - gw * .5) + 'px';
+  document.querySelectorAll('.foil').forEach(f => f.style.backgroundPosition = `${(t * 18) % 220}% 0`);
+  // segment content
+  let seg = SEGS[0];
+  for (const s of SEGS) if (s.start === undefined || t >= s.start) seg = s;
+  show(seg);
+  const st = seg.start || 0, en = seg.end === undefined ? 1e9 : seg.end, local = t - st;
+  const fadeIn = SEGS.length > 1 || t < 3 ? ease(local / .7) : 1;
+  const fadeOut = en - t < .5 ? Math.max(0, (en - t) / .5) : 1;
+  const a = Math.min(fadeIn, fadeOut);
+  $('content').style.opacity = a; $('content').style.transform = `translateY(${(1 - a) * 26}px)`;
+  const words = [...document.querySelectorAll('#text .w')], dur = Math.max(.6, (seg.reveal || 0));
+  words.forEach((w, i) => { const p = seg.reveal ? ease((local - .4 - i * dur / words.length) / .5) : 1;
+    w.style.opacity = .12 + .88 * p; w.style.filter = `blur(${(1 - p) * 6}px)`; });
+};
+</script>
+</body>
+</html>
