@@ -38,7 +38,7 @@ const server = createServer((req, res) => {   // a tiny static server, so fonts 
 await new Promise(r => server.listen(0, '127.0.0.1', r)); const HTTP = `http://127.0.0.1:${server.address().port}`;
 
 const port = 9300 + (process.pid % 600), prof = join(tmpdir(), `smad-chrome-${port}`);
-const chrome = spawn(CHROME, ['--headless=new', ...(GPU ? ['--enable-gpu', ...(process.platform === 'darwin' ? ['--use-angle=metal'] : [])] : ['--disable-gpu']), '--hide-scrollbars',
+const chrome = spawn(CHROME, ['--headless=new', ...(GPU ? ['--enable-gpu', ...(process.platform === 'linux' && !process.env.DISPLAY && !process.env.WAYLAND_DISPLAY ? ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] : []), ...(process.platform === 'darwin' ? ['--use-angle=metal'] : [])] : ['--disable-gpu']), '--hide-scrollbars', ...(process.platform === 'linux' && process.getuid?.() === 0 ? ['--no-sandbox'] : []),
   `--remote-debugging-port=${port}`, `--user-data-dir=${prof}`, '--window-size=1920,1080', 'about:blank'], { stdio: 'ignore' });
 let tg; for (let i = 0; i < 160 && !tg; i++) { try { tg = (await (await fetch(`http://127.0.0.1:${port}/json`)).json()).find(t => t.type === 'page'); } catch { await wait(250); } }
 if (!tg) { console.error('Chrome did not start'); process.exit(1); }
