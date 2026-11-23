@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="580 580 842 1031" width="842" height="1031">
+<defs><linearGradient id="g" gradientUnits="userSpaceOnUse" x1="700" y1="620" x2="1300" y2="1571"><stop offset="0" stop-color="#FFE14D"/><stop offset="0.5" stop-color="#FF7A2F"/><stop offset="1" stop-color="#FF2E88"/></linearGradient></defs>
+<path d="M670.5 999.5 L824.6 845.2 A249 249 0 0 1 1176.4 845.2 L1331.5 999.5 L1176.4 1153.8 A249 249 0 0 1 824.6 1153.8 Z" fill="none" stroke="url(#g)" stroke-width="72" stroke-linejoin="miter" stroke-miterlimit="4"/>
+<circle cx="1000" cy="999.5" r="92.5" fill="none" stroke="url(#g)" stroke-width="71"/>
+<path d="M770.9 727.2 A373 373 0 0 1 1306 807.1" fill="none" stroke="url(#g)" stroke-width="56" stroke-linecap="round"/>
+<path d="M930 1236 L930 1420 Q930 1482 872 1506" fill="none" stroke="url(#g)" stroke-width="56" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1080 1230 L1220 1370 Q1262 1420 1240 1480 Q1210 1546 1146 1546 Q1080 1544 1064 1478 Q1058 1420 1121 1402" fill="none" stroke="url(#g)" stroke-width="50" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="975" y="974.5" width="50" height="50" transform="rotate(45 1000 999.5)" fill="#29F3FF"/>
+</svg>
