@@ -92,11 +92,12 @@ function planFor(dateStr) {
   const dual = (id, n, extra) => ({ id, kind: 'dual', ...extra,
     bgAyah: pick(bg, idx * 4 + n), reciter: pick(RECITERS, idx * 4 + n) });
   posts.push(dual('sunrise', 0, { type: 'dhikr', time: hhmm(round5(sunrise + 10)), theme: 'fajr', pill: 'مع الشروق', item: pick(ADHKAR.F, idx + 3) }));
-  posts.push(dual('morning', 1, { type: 'hadith', time: '09:00', theme: 'dhuhr', pill: 'حديث اليوم', item: pick(HADITH, idx) }));
+  // one hadith a day, read by a narrator voice over a soft rain ambience (no music), near TikTok's midday peak
+  posts.push(dual('hadith', 1, { type: 'hadith', time: friday ? '13:30' : '12:30', theme: 'dhuhr', pill: 'حديث اليوم', item: pick(HADITH, idx) }));
   posts.push(dual('sunset', 2, { type: 'ayah', time: hhmm(round5(sunset - 20)), theme: 'asr', pill: 'قبل الغروب', ayah: pick(ayahImgs, idx) }));
   posts.push(dual('evening', 3, { type: 'qdua', time: '20:00', theme: 'isha', pill: 'دعاء المساء', ayah: pick(QDUAS, idx) }));
   posts.sort((x, y) => x.time.localeCompare(y.time));
-  return { idx, friday, label: `${DAYS_AR[d.getUTCDay()]} · ${ar(d.getUTCDate())} ${MONTHS_AR[d.getUTCMonth()]}`, posts };
+  return { date: dateStr, idx, friday, label: `${DAYS_AR[d.getUTCDay()]} · ${ar(d.getUTCDate())} ${MONTHS_AR[d.getUTCMonth()]}`, posts };
 }
 
 function chunk(text, max = 150) {
@@ -209,6 +210,7 @@ async function buildImage(page, plan, post, base) {
 
 // TikTok version of a feed image: the vertical design, gently moving, with a recitation underneath
 async function buildPhotoVideo(page, plan, post, base, cache, card, caption) {
+  if (post.type === 'hadith' && fs.existsSync(voiceoverPath(plan.date))) return buildVoiceVideo(page, plan, post, base, card, caption);
   const [s, a] = post.bgAyah, rc = post.reciter;
   const file = `${pad3(s)}${pad3(a)}.mp3`;
   const local = path.join(cache, rc.dir); fs.mkdirSync(local, { recursive: true });
@@ -240,10 +242,46 @@ async function buildPhotoVideo(page, plan, post, base, cache, card, caption) {
     tiktokCaption: tkCaption, audio: !!audioPath, reciter: rc.name, bgAyah: post.bgAyah.slice(0, 2).join(':'), seconds: +T.toFixed(1) };
 }
 
+// the narrator's script for a hadith post (spoken in full: «صلى الله عليه وسلم», source at the end)
+const voiceoverText = it => `قالَ رسولُ اللهِ صلى اللهُ عليه وسلم: «${it.text.replace(/ﷺ/g, 'صلى اللهُ عليه وسلم')}». ${it.source.replace(/^\(|\)$/g, '')}.`;
+const voiceoverPath = date => path.join(__dirname, 'cache', 'voiceover', `${date}.mp3`);
+
+// hadith of the day: the vertical design, words appearing, a narrator reading it over soft rain (no music)
+async function buildVoiceVideo(page, plan, post, base, card, caption) {
+  const vo = voiceoverPath(plan.date), D0 = 0.9, T = duration(vo) + D0 + 2.2;
+  await page.setViewportSize({ width: 1080, height: 1920 });
+  await page.evaluate(([p, d]) => window.setup(p, d, true), [{ theme: post.theme, pill: post.pill, prayer: '', ...card }, plan.label]);
+  const args = ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(FPS), '-i', '-', '-i', vo,
+    '-f', 'lavfi', '-i', `anoisesrc=color=brown:amplitude=0.6:r=44100:d=${T.toFixed(2)}`,
+    '-filter_complex', `[1:a]aresample=44100,adelay=${D0 * 1000}:all=1,apad[v];` +
+      `[2:a]highpass=f=150,lowpass=f=2200,volume=0.10,afade=t=in:d=1.2[r];` +
+      `[v][r]amix=inputs=2:duration=longest:normalize=0,afade=t=out:st=${(T - 1.2).toFixed(2)}:d=1.2[a]`,
+    '-map', '0:v', '-map', '[a]', '-t', T.toFixed(2), '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-preset', 'medium', '-crf', '20',
+    '-c:a', 'aac', '-b:a', '160k', '-movflags', '+faststart', base + '-tiktok.mp4'];
+  const ff = spawn('ffmpeg', args, { stdio: ['pipe', 'inherit', 'inherit'] });
+  for (let f = 0, n = Math.ceil(T * FPS); f < n; f++) {
+    await page.evaluate(x => window.setT(x, 1e9), f / FPS);   // arch draws in, words appear one by one
+    const buf = await page.screenshot({ type: 'jpeg', quality: 92 });
+    if (!ff.stdin.write(buf)) await new Promise(r => ff.stdin.once('drain', r));
+  }
+  ff.stdin.end();
+  if (await new Promise(r => ff.on('close', r)) !== 0) throw new Error('ffmpeg failed for ' + post.id);
+  await page.evaluate(() => window.setT(99, 1e9));
+  await page.screenshot({ path: base + '-tiktok-cover.png' });
+  const lines = caption.split('\n'), tags = lines.pop();
+  const tkCaption = [...lines, '🎙️ بصوت راوٍ (صوت مُولَّد) مع صوت المطر', '', tags + ' #حديث_اليوم']
+    .join('\n').replace(/\n{3,}/g, '\n\n');
+  return { tiktokFile: path.basename(base) + '-tiktok.mp4', tiktokCover: path.basename(base) + '-tiktok-cover.png',
+    tiktokCaption: tkCaption, audio: true, reciter: 'voiceover', bgAyah: '-', voiceover: true, seconds: +T.toFixed(1) };
+}
+
 async function main() {
   const date = process.argv[2];
   const only = process.argv.includes('--only') ? process.argv[process.argv.indexOf('--only') + 1].split(',') : null;
   const plan = planFor(date);
+  if (plan && process.argv.includes('--voiceover-text')) {   // print what the narrator should read today
+    console.log(voiceoverText(plan.posts.find(p => p.type === 'hadith').item)); return;
+  }
   if (!plan) {
     if (date < START) { console.log(`Series starts ${START}; nothing to build for ${date}.`); process.exit(4); }
     console.log(`No plan for ${date} (series runs ${START} to ${END}).`); process.exit(3);

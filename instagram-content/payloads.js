@@ -32,7 +32,8 @@ for (const p of posts) {
     // the same video with a recitation on both: an Instagram Reel and a TikTok video
     entry(p.id, { ...common, media: [`${base}/${p.tiktokFile}`], videoThumbnailUrl: `${base}/${p.tiktokCover}`,
       providers: [{ network: 'instagram' }, { network: 'tiktok' }], text: p.tiktokCaption,
-      instagramData: { type: 'REEL', showReelOnFeed: true }, tiktokData: tiktokData({}) });
+      instagramData: { type: 'REEL', showReelOnFeed: true, ...(p.voiceover ? { isAiGenerated: true } : {}) },
+      tiktokData: tiktokData(p.voiceover ? { isAigc: true } : {}) });  // the hadith narrator voice is generated
     continue;
   }
   const info = {
