@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: "Amiri"; src: url(fonts/Amiri-Bold.ttf); font-weight: 700; }
+  @font-face { font-family: "Amiri"; src: url(fonts/Amiri-Regular.ttf); font-weight: 400; }
+  @font-face { font-family: "Ruqaa"; src: url(fonts/ArefRuqaa-Bold.ttf); font-weight: 700; }
+  @font-face { font-family: "Kufi"; src: url(fonts/ReemKufi-SemiBold.ttf); font-weight: 600; }
+  @font-face { font-family: "Readex"; src: url(fonts/ReadexPro-Light.ttf); font-weight: 300; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; overflow: hidden; }
+  #card { position: relative; width: 1080px; height: 1920px; overflow: hidden;
+          background: radial-gradient(60% 40% at 50% 38%, #1d2a4a 0%, #101a33 45%, #070d1f 100%); color: #f6ecd2; }
+  #glow { position: absolute; left: 190px; top: 260px; width: 700px; height: 900px; border-radius: 50%;
+          background: radial-gradient(closest-side, rgba(226,192,122,.16), rgba(226,192,122,0)); }
+  #stars { position: absolute; inset: 0; }
+  .st { position: absolute; border-radius: 50%; background: #f3d79a; box-shadow: 0 0 6px rgba(243,215,154,.8); }
+  #frame { position: absolute; left: 54px; top: 54px; right: 54px; bottom: 54px; border: 1.5px solid rgba(226,192,122,.55); border-radius: 26px; }
+  #frame2 { position: absolute; left: 70px; top: 70px; right: 70px; bottom: 70px; border: 1px solid rgba(226,192,122,.18); border-radius: 20px; }
+  .knot { position: absolute; left: 532px; width: 16px; height: 16px; background: #e2c07a; transform: rotate(45deg); }
+  #title { position: absolute; top: 300px; left: 0; right: 0; text-align: center; font-family: "Ruqaa"; font-weight: 700; font-size: 74px; color: #e2c07a; }
+  #rule { position: absolute; top: 430px; left: 310px; width: 460px; height: 2px; background: linear-gradient(90deg, transparent, #e2c07a 25%, #e2c07a 75%, transparent); }
+  #rule i { position: absolute; left: 222px; top: -7px; width: 16px; height: 16px; background: #e2c07a; transform: rotate(45deg); }
+  #body { position: absolute; left: 130px; right: 130px; top: 560px; height: 900px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  #intro { font-family: "Amiri"; font-weight: 400; font-size: 46px; color: #e2c07a; margin-bottom: 26px; }
+  #text { font-family: "Amiri"; font-weight: 700; line-height: 1.75; color: #fbf3df; text-wrap: balance; text-shadow: 0 3px 18px rgba(0,0,0,.55); }
+  #text .w { display: inline-block; white-space: pre; }
+  #text .q { color: #e2c07a; }
+  #source { font-family: "Amiri"; font-weight: 400; font-size: 44px; color: #e2c07a; margin-top: 40px; }
+  #logo { position: absolute; bottom: 200px; left: 0; right: 0; text-align: center; }
+  #logo b { display: block; font-family: "Kufi"; font-weight: 600; font-size: 84px; line-height: 1.1;
+            background: linear-gradient(180deg, #f6dca0, #d4a85a); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  #logo span { display: block; font-family: "Readex"; font-weight: 300; font-size: 26px; color: rgba(226,192,122,.75); direction: ltr; letter-spacing: 1px; margin-top: 6px; }
+</style>
+</head>
+<body>
+<div id="card">
+  <div id="glow"></div>
+  <div id="stars"></div>
+  <div id="frame"></div><div id="frame2"></div>
+  <div class="knot" style="top:46px"></div><div class="knot" style="bottom:46px"></div>
+  <div id="title">حديث اليوم</div>
+  <div id="rule"><i></i></div>
+  <div id="body"><div id="intro">قال رسول الله ﷺ:</div><div id="text"></div><div id="source"></div></div>
+  <div id="logo"><b>باقيات</b><span>@baqiiyaat</span></div>
+</div>
+<script>
+const clamp = (x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const ease = x => 1 - Math.pow(1 - clamp(x), 3);
+const win = (t,a,b)=>ease((t-a)/(b-a));
+function rnd(seed){ return () => (seed = (seed * 16807) % 2147483647) / 2147483647; }
+let words = [], stars = [];
+window.setup = async (h, seed) => {
+  const tx = document.getElementById('text');
+  const ws = h.text.split(' ');
+  tx.innerHTML = ws.map((w, i) => `<span class="w">${i === 0 ? '<span class="q">«</span>' : ''}${w}${i === ws.length - 1 ? '<span class="q">»</span>' : ''}</span>`).join(' ');
+  words = [...tx.querySelectorAll('.w')];
+  document.getElementById('source').textContent = `(${h.source})`;
+  const r = rnd(seed * 131 + 17), S = document.getElementById('stars'); S.innerHTML = ''; stars = [];
+  for (let i = 0; i < 70; i++) { const e = document.createElement('div'); e.className = 'st'; const s = 1.5 + r() * 3.5;
+    Object.assign(e.style, { width: s + 'px', height: s + 'px', left: (80 + r() * 920) + 'px', top: (80 + r() * 1760) + 'px' });
+    S.appendChild(e); stars.push({ e, ph: r() * 6.28, sp: .6 + r() * 1.6, v: 4 + r() * 10 }); }
+  await document.fonts.ready;
+  const body = document.getElementById('body');
+  let fs = 84; tx.style.fontSize = fs + 'px';
+  while (fs > 46 && [...body.children].reduce((a, e) => a + e.offsetHeight, 0) + 120 > body.clientHeight) { fs -= 2; tx.style.fontSize = fs + 'px'; }
+};
+window.setT = t => {
+  stars.forEach(s => { s.e.style.opacity = (.2 + .6 * (0.5 + 0.5 * Math.sin(t * s.sp + s.ph))) * win(t, 0, 1.5);
+    s.e.style.transform = `translateY(${-t * s.v}px)`; });
+  const fade = (id, a, b, dy = 16) => { const k = win(t, a, b), e = document.getElementById(id); e.style.opacity = k; e.style.transform = `translateY(${(1 - k) * dy}px)`; };
+  fade('frame', 0, 1.2, 0); fade('frame2', 0.2, 1.4, 0); fade('title', 0.5, 1.5); fade('logo', 0.6, 1.6);
+  document.getElementById('rule').style.opacity = win(t, 0.9, 1.8);
+  document.querySelectorAll('.knot').forEach(k => k.style.opacity = win(t, 0, 1));
+  document.getElementById('glow').style.opacity = 0.75 + 0.25 * Math.sin(t * 0.6);
+  fade('intro', 1.8, 2.6);
+  const w0 = 2.6, per = Math.min(0.42, 6 / Math.max(words.length, 1));
+  words.forEach((w, i) => { const k = win(t, w0 + i * per, w0 + i * per + 0.8);
+    w.style.opacity = k; w.style.transform = `translateY(${(1 - k) * 14}px)`; w.style.filter = k < 1 ? `blur(${(1 - k) * 5}px)` : ''; });
+  const end = w0 + words.length * per + 0.5;
+  fade('source', end, end + 0.9);
+};
+</script>
+</body>
+</html>
